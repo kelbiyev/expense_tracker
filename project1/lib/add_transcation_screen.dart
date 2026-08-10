@@ -13,6 +13,7 @@ class AddTransactionScreen extends StatefulWidget {
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
+  final TextEditingController noteController = TextEditingController();
 
 
 
@@ -24,8 +25,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     'Hobby',
     'Streaming',
     'Subscription',
+    'Shopping'
   ];
-
+ 
+  String selectedType = 'expense';
   String selectedCategory = 'Food';
   DateTime selectedDate = DateTime.now();
 
@@ -54,6 +57,20 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            SegmentedButton<String>(
+              segments: [
+                ButtonSegment(value: 'expense', label: Text('Expense')),
+                ButtonSegment(value: 'income', label: Text('Income')),
+              ],
+              selected: {selectedType},
+              onSelectionChanged: (Set<String> newSelection) {
+                setState(() {
+                  selectedType = newSelection.first;
+                });
+              },
+              multiSelectionEnabled: false,
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: titleController,
               decoration: const InputDecoration(
@@ -68,7 +85,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 labelText: 'Amount',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder()
               ),
             ),
             
@@ -94,16 +111,27 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               onPressed: _pickDate, 
               child: Text('Date: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}')
             ),
+
+            const SizedBox(height: 16),
+            TextField(
+              controller: noteController,
+              decoration: const InputDecoration(
+                labelText: 'Note',
+                border: OutlineInputBorder(),
+              ),
+            ),
             
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 String formattedDate = '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}';
                 Transaction newTransaction = Transaction(
-                  formattedDate,
-                  titleController.text,
-                  selectedCategory,
-                  double.parse(amountController.text),
+                  date: formattedDate,
+                  title: titleController.text,
+                  category: selectedCategory,
+                  amount: double.parse(amountController.text),
+                  type: selectedType,
+                  note: noteController.text.isEmpty ? null: noteController.text,
                 );
                 Navigator.pop(context, newTransaction);
               }, 

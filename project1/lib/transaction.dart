@@ -8,8 +8,17 @@ class Transaction {
   String category;
   double amount;
   String date;
+  String type;
+  String? note;
 
-  Transaction(this.date, this.title, this.category, this.amount);
+  Transaction({
+    required this.date, 
+    required this.title, 
+    required this.category, 
+    required this.amount, 
+    required this.type,
+    this.note,
+  });
 
 
   Map<String, dynamic> toMap() {
@@ -18,16 +27,20 @@ class Transaction {
       'title': title,
       'category': category,
       'amount': amount,
+      'type': type,
+      'note': note,
     };
   }
 
 
   factory Transaction.fromMap(Map<String, dynamic> map) {
     return Transaction(
-      map['date'], 
-      map['title'], 
-      map['category'], 
-      map['amount'],
+      date: map['date'], 
+      title: map['title'], 
+      category: map['category'], 
+      amount: map['amount'],
+      type: map['type'],
+      note: map['note'],
     );
   }
 }
@@ -38,7 +51,12 @@ class Transaction {
 double calculateTotal(List<Transaction> transactions) {
   double total = 0;
   for (int i = 0; i< transactions.length; i++) {
-    total = total + transactions[i].amount;
+    Transaction t = transactions[i];
+    if(t.type == 'expense') {
+      total = total - t.amount;
+    } else {
+      total = total + t.amount;
+    }
   }
 
   return total;
@@ -48,17 +66,17 @@ double calculateTotal(List<Transaction> transactions) {
 double calculateExpense(List<Transaction> transactions) {
   double expense = 0;
   for(int i = 0; i< transactions.length; i++) {
-    if(transactions[i].amount < 0){
+    if(transactions[i].type == 'expense') {
       expense = expense + transactions[i].amount;
     }
   }
-  return expense.abs();
+  return expense;
 }
 
 double calculateIncome(List<Transaction> transactions) {
   double income = 0;
   for(int i = 0; i< transactions.length; i++) {
-    if(transactions[i].amount > 0){
+    if(transactions[i].type == 'income'){
       income = income + transactions[i].amount;
     }
   }
@@ -72,11 +90,11 @@ Map<String, double> calculateCategoryTotals(List<Transaction> transactions) {
 
   for(int i = 0;i < transactions.length; i++) {
     Transaction t = transactions[i];
-    if(t.amount < 0) {
+    if(t.type == 'expense') {
       if(categoryTotals.containsKey(t.category)) {
-        categoryTotals[t.category] = categoryTotals[t.category]! + t.amount.abs();
+        categoryTotals[t.category] = categoryTotals[t.category]! + t.amount;
       } else {
-        categoryTotals[t.category] = t.amount.abs();
+        categoryTotals[t.category] = t.amount;
       }
     }
   }
@@ -86,7 +104,7 @@ Map<String, double> calculateCategoryTotals(List<Transaction> transactions) {
 
 
 List<PieChartSectionData> buildSections(Map<String, double> categoryTotals) {
-  List<Color> colors = [Colors.red, Colors.blue, Colors.green, Colors.yellow, Colors.purple, Colors.orange];
+  List<Color> colors = [Colors.red, Colors.blue, Colors.green, Colors.yellow, Colors.purple, Colors.orange, const Color.fromARGB(255, 73, 97, 19)];
   List<PieChartSectionData> sections = [];
   int colorIndex = 0;
 

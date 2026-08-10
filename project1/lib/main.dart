@@ -166,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   trailing: Text(
                    '${t.amount}',
                    style: TextStyle(
-                     color: t.amount < 0 ? Colors.red : Colors.green,
+                     color: t.type == 'expense' ? Colors.red : Colors.green,
                       fontSize: 16,
                     ),
                   ),
