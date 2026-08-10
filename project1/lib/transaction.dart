@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Transaction {
-  
   String title;
   String category;
   double amount;
@@ -14,15 +13,13 @@ class Transaction {
   String? note;
 
   Transaction({
-    required this.date, 
-    required this.title, 
-    required this.category, 
-    required this.amount, 
+    required this.date,
+    required this.title,
+    required this.category,
+    required this.amount,
     required this.type,
     this.note,
   });
-
-
 
   Map<String, dynamic> toMap() {
     return {
@@ -35,19 +32,17 @@ class Transaction {
     };
   }
 
-
   factory Transaction.fromMap(Map<String, dynamic> map) {
     return Transaction(
-      date: map['date'], 
-      title: map['title'], 
-      category: map['category'], 
+      date: map['date'],
+      title: map['title'],
+      category: map['category'],
       amount: map['amount'],
       type: map['type'],
       note: map['note'],
     );
   }
 }
-
 
 Map<String, IconData> categoryIcons = {
   'Food': Icons.restaurant,
@@ -60,7 +55,6 @@ Map<String, IconData> categoryIcons = {
   'Shopping': Icons.shopping_bag,
 };
 
-
 Map<String, Color> categoryColors = {
   'Food': Colors.orange,
   'Transport': Colors.blue,
@@ -72,20 +66,17 @@ Map<String, Color> categoryColors = {
   'Shopping': Colors.brown,
 };
 
-
-
 //MARK: FUNCTIONS
-String formatCurrency (double value) {
+String formatCurrency(double value) {
   final formatter = NumberFormat('#,##0.00');
   return formatter.format(value);
 }
 
-
 double calculateTotal(List<Transaction> transactions) {
   double total = 0;
-  for (int i = 0; i< transactions.length; i++) {
+  for (int i = 0; i < transactions.length; i++) {
     Transaction t = transactions[i];
-    if(t.type == 'expense') {
+    if (t.type == 'expense') {
       total = total - t.amount;
     } else {
       total = total + t.amount;
@@ -95,33 +86,29 @@ double calculateTotal(List<Transaction> transactions) {
   return total;
 }
 
-
 double calculateExpense(List<Transaction> transactions) {
   double expense = 0;
-  for(int i = 0; i< transactions.length; i++) {
-    if(transactions[i].type == 'expense') {
+  for (int i = 0; i < transactions.length; i++) {
+    if (transactions[i].type == 'expense') {
       expense = expense + transactions[i].amount;
     }
   }
   return expense;
 }
 
-
 double calculateIncome(List<Transaction> transactions) {
   double income = 0;
-  for(int i = 0; i< transactions.length; i++) {
-    if(transactions[i].type == 'income'){
+  for (int i = 0; i < transactions.length; i++) {
+    if (transactions[i].type == 'income') {
       income = income + transactions[i].amount;
     }
   }
   return income;
 }
 
-
 IconData getCategoryIcon(String category) {
   return categoryIcons[category] ?? Icons.category;
 }
-
 
 Color getCategoryColor(String category) {
   return categoryColors[category] ?? Colors.grey;
@@ -131,10 +118,10 @@ Color getCategoryColor(String category) {
 Map<String, double> calculateCategoryTotals(List<Transaction> transactions) {
   Map<String, double> categoryTotals = {};
 
-  for(int i = 0;i < transactions.length; i++) {
+  for (int i = 0; i < transactions.length; i++) {
     Transaction t = transactions[i];
-    if(t.type == 'expense') {
-      if(categoryTotals.containsKey(t.category)) {
+    if (t.type == 'expense') {
+      if (categoryTotals.containsKey(t.category)) {
         categoryTotals[t.category] = categoryTotals[t.category]! + t.amount;
       } else {
         categoryTotals[t.category] = t.amount;
@@ -145,9 +132,16 @@ Map<String, double> calculateCategoryTotals(List<Transaction> transactions) {
   return categoryTotals;
 }
 
-
 List<PieChartSectionData> buildSections(Map<String, double> categoryTotals) {
-  List<Color> colors = [Colors.red, Colors.blue, Colors.green, Colors.yellow, Colors.purple, Colors.orange, const Color.fromARGB(255, 73, 97, 19)];
+  List<Color> colors = [
+    Colors.red,
+    Colors.blue,
+    Colors.green,
+    Colors.yellow,
+    Colors.purple,
+    Colors.orange,
+    const Color.fromARGB(255, 73, 97, 19),
+  ];
   List<PieChartSectionData> sections = [];
   int colorIndex = 0;
 
@@ -166,37 +160,30 @@ List<PieChartSectionData> buildSections(Map<String, double> categoryTotals) {
   return sections;
 }
 
-
 //MARK: JSON
 String transactionsToJson(List<Transaction> transactions) {
-  
-  List<Map<String, dynamic>> mapsList = transactions.map((t) => t.toMap()).toList();
-  
+  List<Map<String, dynamic>> mapsList = transactions
+      .map((t) => t.toMap())
+      .toList();
+
   return jsonEncode(mapsList);
 }
 
-
 List<Transaction> transactionsFromJson(String jsonString) {
-  
   List<dynamic> decoded = jsonDecode(jsonString);
-  
+
   return decoded.map((item) => Transaction.fromMap(item)).toList();
 }
 
-
 Future<void> saveTransactions(List<Transaction> transactions) async {
-  
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString('transactions', transactionsToJson(transactions));
 }
 
-
 Future<List<Transaction>> loadTransactions() async {
-  
   final prefs = await SharedPreferences.getInstance();
   final jsonString = prefs.getString('transactions');
-  if(jsonString == null) {
-    
+  if (jsonString == null) {
     return [];
   }
 

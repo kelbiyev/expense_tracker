@@ -1,12 +1,11 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'transaction.dart';
 import 'add_transcation_screen.dart';
+import 'stats_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,7 +16,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 2, 46, 3)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 2, 46, 3),
+        ),
       ),
       home: const MyHomePage(title: 'Expense Tracker'),
     );
@@ -34,8 +35,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
-  int selectedIndex = 0;
   List<Transaction> transactions = [];
 
   @override
@@ -51,35 +50,23 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: selectedIndex == 0 ? buildHomeContent() : buildStatsContent(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home) , label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.pie_chart), label: 'Stats'),
-        ]
-      ),
+      body: buildHomeContent(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async{
+        onPressed: () async {
           final result = await Navigator.push<Transaction>(
-            context, 
-            MaterialPageRoute(builder: (context) => const AddTransactionScreen()),
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTransactionScreen(),
+            ),
           );
-          if (result !=null) {
+          if (result != null) {
             setState(() {
               transactions.add(result);
             });
@@ -91,11 +78,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
   //MARK: Home Screen
 
   Widget buildHomeContent() {
-
     double balance = calculateTotal(transactions);
     double expense = calculateExpense(transactions);
     double income = calculateIncome(transactions);
@@ -110,17 +95,24 @@ class _MyHomePageState extends State<MyHomePage> {
               decoration: BoxDecoration(
                 color: const Color(0xFF1B5E4F),
                 borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Balance', 
+                    'Balance',
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   Text(
                     '${formatCurrency(balance)} ₼',
-                    style: const TextStyle(color: Colors.white , fontSize: 24),
+                    style: const TextStyle(color: Colors.white, fontSize: 24),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -136,17 +128,17 @@ class _MyHomePageState extends State<MyHomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Income', 
+                                'Income',
                                 style: TextStyle(
-                                  color: Colors.white70, 
+                                  color: Colors.white70,
                                   fontSize: 14,
                                 ),
                               ),
                               Text(
                                 '${formatCurrency(income)} ₼',
                                 style: const TextStyle(
-                                  color: Colors.white, 
-                                  fontSize: 18, 
+                                  color: Colors.white,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -202,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.red,
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: const Icon(Icons.delete,color: Colors.white),
+                  child: const Icon(Icons.delete, color: Colors.white),
                 ),
                 onDismissed: (direction) {
                   setState(() {
@@ -210,76 +202,81 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
                   saveTransactions(transactions);
                 },
-                child: ListTile(
-                  leading: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: getCategoryColor(t.category).withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      getCategoryIcon(t.category),
-                      color: getCategoryColor(t.category),
-                    ),
+                //MARK: LIST TILE
+                child: Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 6,
                   ),
-                  title: Text(t.title),
-                  subtitle: Text('${t.category} · ${t.date}'),
-                  trailing: Text(
-                    '${formatCurrency(t.amount)} ₼',
-                    style: TextStyle(
-                    color: t.type == 'expense' ? Colors.red : Colors.green,
-                      fontSize: 16,
-                    ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
-                  onTap: () {
-                    showDialog(
-                      context: context, 
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text(t.title),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Category: ${t.category}'),
-                              Text('Amount: ${t.amount}'),
-                              Text('Date: ${t.date}'),
-                              Text('Type: ${t.type}'),
-                              if(t.note != null && t.note!.isNotEmpty)
-                                Text('Note: ${t.note}'),                              
-                            ],
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context), 
-                              child: const Text('Close'),
+                  child: ListTile(
+                    leading: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: getCategoryColor(
+                          t.category,
+                        ).withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        getCategoryIcon(t.category),
+                        color: getCategoryColor(t.category),
+                      ),
+                    ),
+                    title: Text(t.title),
+                    subtitle: Text('${t.category} · ${t.date}'),
+                    trailing: Text(
+                      '${formatCurrency(t.amount)} ₼',
+                      style: TextStyle(
+                        color: t.type == 'expense' ? Colors.red : Colors.green,
+                        fontSize: 16,
+                      ),
+                    ),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(t.title),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Category: ${t.category}'),
+                                Text('Amount: ${t.amount}'),
+                                Text('Date: ${t.date}'),
+                                Text('Type: ${t.type}'),
+                                if (t.note != null && t.note!.isNotEmpty)
+                                  Text('Note: ${t.note}'),
+                              ],
                             ),
-                          ],
-                        ); 
-                      });
-                  },
-                ), 
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Close'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
               );
             },
           ),
         ],
-      ),
-    );
-  }
-
-  //MARK: Stats
-
-  Widget buildStatsContent() {
-    final categoryTotals = calculateCategoryTotals(transactions);
-    return Center(
-      child: SizedBox(
-        height: 300, 
-        child: PieChart(
-          PieChartData(
-            sections: buildSections(categoryTotals),
-          )
-        ),
       ),
     );
   }

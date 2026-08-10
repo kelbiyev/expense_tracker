@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'transaction.dart';
 
-
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
-  
+
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
 }
-
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
-
-
 
   final List<String> categories = [
     'Food',
@@ -25,9 +21,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     'Hobby',
     'Streaming',
     'Subscription',
-    'Shopping'
+    'Shopping',
   ];
- 
+
   String selectedType = 'expense';
   String selectedCategory = 'Food';
   DateTime selectedDate = DateTime.now();
@@ -46,8 +42,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       });
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -78,26 +72,23 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 border: OutlineInputBorder(),
               ),
             ),
-            
+
             const SizedBox(height: 16),
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 labelText: 'Amount',
-                border: OutlineInputBorder()
+                border: OutlineInputBorder(),
               ),
             ),
-            
+
             const SizedBox(height: 16),
             DropdownButton<String>(
               value: selectedCategory,
               isExpanded: true,
               items: categories.map((category) {
-                return DropdownMenuItem(
-                  value: category,
-                  child: Text(category),
-                );
+                return DropdownMenuItem(value: category, child: Text(category));
               }).toList(),
               onChanged: (newValue) {
                 setState(() {
@@ -105,11 +96,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 });
               },
             ),
-            
+
             const SizedBox(height: 16),
             TextButton(
-              onPressed: _pickDate, 
-              child: Text('Date: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}')
+              onPressed: _pickDate,
+              child: Text(
+                'Date: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+              ),
             ),
 
             const SizedBox(height: 16),
@@ -120,21 +113,24 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 border: OutlineInputBorder(),
               ),
             ),
-            
+
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                String formattedDate = '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}';
+                String formattedDate =
+                    '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}';
                 Transaction newTransaction = Transaction(
                   date: formattedDate,
                   title: titleController.text,
                   category: selectedCategory,
                   amount: double.parse(amountController.text),
                   type: selectedType,
-                  note: noteController.text.isEmpty ? null: noteController.text,
+                  note: noteController.text.isEmpty
+                      ? null
+                      : noteController.text,
                 );
                 Navigator.pop(context, newTransaction);
-              }, 
+              },
               child: const Text('Save'),
             ),
           ],
