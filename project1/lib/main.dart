@@ -7,6 +7,7 @@ void main() {
   runApp(const MyApp());
 }
 
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -111,28 +112,77 @@ class _MyHomePageState extends State<MyHomePage> {
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Total balance', 
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    'Balance', 
+                    style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   Text(
-                    '$balance',
-                    style: const TextStyle(color: Colors.white , fontSize: 32),
+                    '${formatCurrency(balance)} ₼',
+                    style: const TextStyle(color: Colors.white , fontSize: 24),
                   ),
                   const SizedBox(height: 20),
-                  
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Income: ${income.toStringAsFixed(2)}',
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Income', 
+                                style: TextStyle(
+                                  color: Colors.white70, 
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Text(
+                                '${formatCurrency(income)} ₼',
+                                style: const TextStyle(
+                                  color: Colors.white, 
+                                  fontSize: 18, 
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      Text(
-                        'Expense: ${expense.toStringAsFixed(2)}',
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Expense',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Text(
+                                '${formatCurrency(expense)} ₼',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -161,15 +211,54 @@ class _MyHomePageState extends State<MyHomePage> {
                   saveTransactions(transactions);
                 },
                 child: ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: getCategoryColor(t.category).withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      getCategoryIcon(t.category),
+                      color: getCategoryColor(t.category),
+                    ),
+                  ),
                   title: Text(t.title),
                   subtitle: Text('${t.category} · ${t.date}'),
                   trailing: Text(
-                   '${t.amount}',
-                   style: TextStyle(
-                     color: t.type == 'expense' ? Colors.red : Colors.green,
+                    '${formatCurrency(t.amount)} ₼',
+                    style: TextStyle(
+                    color: t.type == 'expense' ? Colors.red : Colors.green,
                       fontSize: 16,
                     ),
                   ),
+                  onTap: () {
+                    showDialog(
+                      context: context, 
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text(t.title),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Category: ${t.category}'),
+                              Text('Amount: ${t.amount}'),
+                              Text('Date: ${t.date}'),
+                              Text('Type: ${t.type}'),
+                              if(t.note != null && t.note!.isNotEmpty)
+                                Text('Note: ${t.note}'),                              
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context), 
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        ); 
+                      });
+                  },
                 ), 
               );
             },

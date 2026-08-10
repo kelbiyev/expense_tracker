@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Transaction {
+  
   String title;
   String category;
   double amount;
@@ -19,6 +21,7 @@ class Transaction {
     required this.type,
     this.note,
   });
+
 
 
   Map<String, dynamic> toMap() {
@@ -45,7 +48,37 @@ class Transaction {
   }
 }
 
+
+Map<String, IconData> categoryIcons = {
+  'Food': Icons.restaurant,
+  'Transport': Icons.directions_bus,
+  'Salary': Icons.attach_money,
+  'Cinema': Icons.movie,
+  'Hobby': Icons.sports_esports,
+  'Streaming': Icons.tv,
+  'Subscription': Icons.subscriptions,
+  'Shopping': Icons.shopping_bag,
+};
+
+
+Map<String, Color> categoryColors = {
+  'Food': Colors.orange,
+  'Transport': Colors.blue,
+  'Salary': Colors.green,
+  'Cinema': Colors.purple,
+  'Hobby': Colors.pink,
+  'Streaming': Colors.red,
+  'Subscription': Colors.teal,
+  'Shopping': Colors.brown,
+};
+
+
+
 //MARK: FUNCTIONS
+String formatCurrency (double value) {
+  final formatter = NumberFormat('#,##0.00');
+  return formatter.format(value);
+}
 
 
 double calculateTotal(List<Transaction> transactions) {
@@ -73,6 +106,7 @@ double calculateExpense(List<Transaction> transactions) {
   return expense;
 }
 
+
 double calculateIncome(List<Transaction> transactions) {
   double income = 0;
   for(int i = 0; i< transactions.length; i++) {
@@ -83,8 +117,17 @@ double calculateIncome(List<Transaction> transactions) {
   return income;
 }
 
-//MARK: CHARTS
 
+IconData getCategoryIcon(String category) {
+  return categoryIcons[category] ?? Icons.category;
+}
+
+
+Color getCategoryColor(String category) {
+  return categoryColors[category] ?? Colors.grey;
+}
+
+//MARK: CHARTS
 Map<String, double> calculateCategoryTotals(List<Transaction> transactions) {
   Map<String, double> categoryTotals = {};
 
@@ -123,27 +166,37 @@ List<PieChartSectionData> buildSections(Map<String, double> categoryTotals) {
   return sections;
 }
 
-//MARK: JSON
 
+//MARK: JSON
 String transactionsToJson(List<Transaction> transactions) {
+  
   List<Map<String, dynamic>> mapsList = transactions.map((t) => t.toMap()).toList();
+  
   return jsonEncode(mapsList);
 }
 
+
 List<Transaction> transactionsFromJson(String jsonString) {
+  
   List<dynamic> decoded = jsonDecode(jsonString);
+  
   return decoded.map((item) => Transaction.fromMap(item)).toList();
 }
 
+
 Future<void> saveTransactions(List<Transaction> transactions) async {
+  
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString('transactions', transactionsToJson(transactions));
 }
 
+
 Future<List<Transaction>> loadTransactions() async {
+  
   final prefs = await SharedPreferences.getInstance();
   final jsonString = prefs.getString('transactions');
   if(jsonString == null) {
+    
     return [];
   }
 
