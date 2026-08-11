@@ -36,6 +36,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Transaction> transactions = [];
+  bool isMenuOpen = false;
 
   @override
   void initState() {
@@ -57,23 +58,111 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: buildHomeContent(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push<Transaction>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddTransactionScreen(),
+      body: Stack(
+        children: [
+          buildHomeContent(),
+          AnimatedOpacity(
+            opacity: isMenuOpen ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 200),
+            child: IgnorePointer(
+              ignoring: !isMenuOpen,
+              child: GestureDetector(
+                onTap: () => setState(() => isMenuOpen = false),
+                child: Container(color: Colors.black.withValues(alpha: 0.4)),
+              ),
             ),
-          );
-          if (result != null) {
-            setState(() {
-              transactions.add(result);
-            });
-            saveTransactions(transactions);
-          }
+          ),
+          Positioned(
+            right: 16,
+            bottom: 130,
+            child: IgnorePointer(
+              ignoring: !isMenuOpen,
+              child: AnimatedSlide(
+                offset: isMenuOpen ? Offset.zero : const Offset(0, 0.4),
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutCubic,
+                child: AnimatedScale(
+                  scale: isMenuOpen ? 1.0 : 0.5,
+                  duration: const Duration(milliseconds: 250),
+                  alignment: Alignment.bottomRight,
+                  child: AnimatedOpacity(
+                    opacity: isMenuOpen ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        _buildMenuItem('Büdcə Hədəfləri', Icons.savings, () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Coming soon...')),
+                          );
+                        }),
+                        const SizedBox(height: 12),
+                        _buildMenuItem(
+                          'Kateqoriya Statistikası',
+                          Icons.pie_chart,
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    StatsScreen(transactions: transactions),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        _buildMenuItem('Yeni əməliyyat', Icons.add, () async {
+                          final result = await Navigator.push<Transaction>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const AddTransactionScreen(),
+                            ),
+                          );
+                          if (result != null) {
+                            setState(() {
+                              transactions.add(result);
+                            });
+                            saveTransactions(transactions);
+                          }
+                        }),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() => isMenuOpen = !isMenuOpen);
         },
-        child: const Icon(Icons.add),
+        child: Icon(isMenuOpen ? Icons.close : Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(String label, IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: () {
+        setState(() => isMenuOpen = false);
+        onTap();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: Text(label, style: const TextStyle(fontSize: 14)),
       ),
     );
   }
@@ -184,6 +273,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           ListView.builder(
             shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: transactions.length,
             itemBuilder: (context, index) {
               Transaction t = transactions[index];
