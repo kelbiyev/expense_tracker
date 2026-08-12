@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/dev/project1/windows/runner"
+    "cmake.sourceDirectory": "C:/dev/project1/windows/runner",
+    "cmake.ignoreCMakeListsMissing": true
 }

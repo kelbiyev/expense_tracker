@@ -278,96 +278,100 @@ class _MyHomePageState extends State<MyHomePage> {
             itemCount: transactions.length,
             itemBuilder: (context, index) {
               Transaction t = transactions[index];
-              return Slidable(
-                key: Key('${t.title}-${t.date}-$index'),
-                endActionPane: ActionPane(
-                  motion: const DrawerMotion(),
-                  extentRatio: 0.25,
-                  children: [
-                    SlidableAction(
-                      onPressed: (context) {
-                        setState(() {
-                          transactions.removeAt(index);
-                        });
-                        saveTransactions(transactions);
-                      },
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      icon: Icons.delete,
-                      label: 'Delete',
-                      borderRadius: BorderRadius.circular(26),
-                    ),
-                  ],
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
                 ),
-                //MARK: LIST TILE
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
+                child: Slidable(
+                  key: Key('${t.title}-${t.date}-$index'),
+                  endActionPane: ActionPane(
+                    motion: const DrawerMotion(),
+                    extentRatio: 0.25,
+                    children: [
+                      SlidableAction(
+                        onPressed: (context) {
+                          setState(() {
+                            transactions.removeAt(index);
+                          });
+                          saveTransactions(transactions);
+                        },
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete,
+                        label: 'Delete',
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ],
                   ),
-                  child: ListTile(
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: getCategoryColor(
-                          t.category,
-                        ).withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        getCategoryIcon(t.category),
-                        color: getCategoryColor(t.category),
-                      ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                     ),
-                    title: Text(t.title),
-                    subtitle: Text('${t.category} · ${t.date}'),
-                    trailing: Text(
-                      '${formatCurrency(t.amount)} ₼',
-                      style: TextStyle(
-                        color: t.type == 'expense' ? Colors.red : Colors.green,
-                        fontSize: 16,
+                    //MARK: LIST TILE
+                    child: ListTile(
+                      leading: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: getCategoryColor(
+                            t.category,
+                          ).withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          getCategoryIcon(t.category),
+                          color: getCategoryColor(t.category),
+                        ),
                       ),
-                    ),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text(t.title),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Category: ${t.category}'),
-                                Text('Amount: ${t.amount}'),
-                                Text('Date: ${t.date}'),
-                                Text('Type: ${t.type}'),
-                                if (t.note != null && t.note!.isNotEmpty)
-                                  Text('Note: ${t.note}'),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('Close'),
+                      title: Text(t.title),
+                      subtitle: Text('${t.category} · ${t.date}'),
+                      trailing: Text(
+                        '${formatCurrency(t.amount)} ₼',
+                        style: TextStyle(
+                          color: t.type == 'expense'
+                              ? Colors.red
+                              : Colors.green,
+                          fontSize: 16,
+                        ),
+                      ),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(t.title),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Category: ${t.category}'),
+                                  Text('Amount: ${t.amount}'),
+                                  Text('Date: ${t.date}'),
+                                  Text('Type: ${t.type}'),
+                                  if (t.note != null && t.note!.isNotEmpty)
+                                    Text('Note: ${t.note}'),
+                                ],
                               ),
-                            ],
-                          );
-                        },
-                      );
-                    },
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Close'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ),
               );
