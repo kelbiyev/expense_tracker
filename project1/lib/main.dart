@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'transaction.dart';
 import 'add_transcation_screen.dart';
 import 'stats_screen.dart';
@@ -277,21 +278,27 @@ class _MyHomePageState extends State<MyHomePage> {
             itemCount: transactions.length,
             itemBuilder: (context, index) {
               Transaction t = transactions[index];
-              return Dismissible(
+              return Slidable(
                 key: Key('${t.title}-${t.date}-$index'),
-                direction: DismissDirection.endToStart,
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: const Icon(Icons.delete, color: Colors.white),
+                endActionPane: ActionPane(
+                  motion: const DrawerMotion(),
+                  extentRatio: 0.25,
+                  children: [
+                    SlidableAction(
+                      onPressed: (context) {
+                        setState(() {
+                          transactions.removeAt(index);
+                        });
+                        saveTransactions(transactions);
+                      },
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      icon: Icons.delete,
+                      label: 'Delete',
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                  ],
                 ),
-                onDismissed: (direction) {
-                  setState(() {
-                    transactions.removeAt(index);
-                  });
-                  saveTransactions(transactions);
-                },
                 //MARK: LIST TILE
                 child: Container(
                   margin: const EdgeInsets.symmetric(
