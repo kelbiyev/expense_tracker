@@ -183,9 +183,8 @@ Future<void> saveTransactions(List<Transaction> transactions) async {
 Future<List<Transaction>> loadTransactions() async {
   final prefs = await SharedPreferences.getInstance();
   final jsonString = prefs.getString('transactions');
-  if (jsonString == null) {
-    return [];
-  }
-
+  
+  if (jsonString == null) return [];
+  
   return transactionsFromJson(jsonString);
 }
