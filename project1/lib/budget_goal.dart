@@ -14,26 +14,25 @@ class BudgetGoal {
 
   Map<String, dynamic> toMap() {
     return {
-      'category': category ,
+      'category': category,
       'monthlyLimit': monthlyLimit,
-      'notificationThreshold': notificationThreshold ,
+      'notificationThreshold': notificationThreshold,
     };
   }
 
   factory BudgetGoal.fromMap(Map<String, dynamic> map) {
     return BudgetGoal(
-      category: map['category'], 
-      monthlyLimit: map['monthlyLimit'], 
-      notificationThreshold: map['notificationThreshold']
+      category: map['category'],
+      monthlyLimit: map['monthlyLimit'],
+      notificationThreshold: map['notificationThreshold'],
     );
   }
-
 }
 
 String budgetGoalsToJson(List<BudgetGoal> budgetGoals) {
   List<Map<String, dynamic>> mapsList = budgetGoals
-    .map((t) => t.toMap())
-    .toList();
+      .map((t) => t.toMap())
+      .toList();
 
   return jsonEncode(mapsList);
 }
@@ -52,8 +51,8 @@ Future<void> saveBudgetGoals(List<BudgetGoal> budgetGoals) async {
 Future<List<BudgetGoal>> loadBudgetGoals() async {
   final prefs = await SharedPreferences.getInstance();
   final jsonString = prefs.getString('budgetGoals');
-  
-  if(jsonString == null) return[];
+
+  if (jsonString == null) return [];
 
   return budgetGoalsFromJson(jsonString);
 }
