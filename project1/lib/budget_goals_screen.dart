@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'budget_goal.dart';
 import 'transaction.dart';
+import 'new_goal_screen.dart';
 
-class BudgetGoalsScreen extends StatelessWidget {
-  final List<BudgetGoal> budgetGoals;
+class BudgetGoalsScreen extends StatefulWidget {
   final List<Transaction> transactions;
+  final List<BudgetGoal> budgetGoals;
 
   const BudgetGoalsScreen({
     super.key,
@@ -13,10 +14,44 @@ class BudgetGoalsScreen extends StatelessWidget {
   });
 
   @override
+  State<BudgetGoalsScreen> createState() => _BudgetGoalsScreenState();
+}
+
+class _BudgetGoalsScreenState extends State<BudgetGoalsScreen> {
+  late List<BudgetGoal> goals;
+
+  @override
+  void initState() {
+    super.initState();
+    goals = List.from(widget.budgetGoals);
+  }
+
+  Future<void> _openNewGoalScreen() async {
+    List<String> allCategories = categoryIcons.keys.toList();
+    List<String> availableCategories = allCategories
+        .where((category) => !goals.any((goal) => goal.category == category))
+        .toList();
+
+    final result = await Navigator.push<BudgetGoal>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NewGoalScreen(availableCategories: availableCategories),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        goals.add(result);
+      });
+      saveBudgetGoals(goals);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final categoryTotals = calculateCategoryTotals(transactions);
-    final totalSpent = calculateExpense(transactions);
-    final totalLimit = budgetGoals.fold(
+    final categoryTotals = calculateCategoryTotals(widget.transactions);
+    final totalSpent = calculateExpense(widget.transactions);
+    final totalLimit = goals.fold(
       0.0,
       (sum, goal) => sum + goal.monthlyLimit,
     );
@@ -73,7 +108,7 @@ class BudgetGoalsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            ...budgetGoals.map((goal) {
+            ...goals.map((goal) {
               double spent = categoryTotals[goal.category] ?? 0;
               double ratio = goal.monthlyLimit == 0
                   ? 0
@@ -174,7 +209,8 @@ class BudgetGoalsScreen extends StatelessWidget {
                     backgroundColor: const Color(0xFF1B5E4F),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  onPressed: () {},
+                  onPressed: _openNewGoalScreen,
+
                   child: const Text(
                     'Yeni bir hədəf əlavə et',
                     style: TextStyle(color: Colors.white),

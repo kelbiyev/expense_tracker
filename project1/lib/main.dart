@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:project1/budget_goals_screen.dart';
 import 'transaction.dart';
 import 'add_transcation_screen.dart';
 import 'stats_screen.dart';
+import 'budget_goal.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,6 +40,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Transaction> transactions = [];
   bool isMenuOpen = false;
+  List<BudgetGoal> budgetGoals = [];
 
   @override
   void initState() {
@@ -46,9 +49,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _loadData() async {
-    final loaded = await loadTransactions();
+    final loadedTransactions = await loadTransactions();
+    final loadedGoals = await loadBudgetGoals();
     setState(() {
-      transactions = loaded;
+      transactions = loadedTransactions;
+      budgetGoals = loadedGoals;
     });
   }
 
@@ -92,11 +97,22 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        _buildMenuItem('Büdcə Hədəfləri', Icons.savings, () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Coming soon...')),
-                          );
-                        }),
+                        _buildMenuItem(
+                          'Büdcə Hədəfləri',
+                          Icons.savings,
+                          () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BudgetGoalsScreen(
+                                  transactions: transactions,
+                                  budgetGoals: budgetGoals,
+                                ),
+                              ),
+                            );
+                            _loadData(); // перечитываем и transactions, и budgetGoals заново из хранилища
+                          },
+                        ),
                         const SizedBox(height: 12),
                         _buildMenuItem(
                           'Kateqoriya Statistikası',
