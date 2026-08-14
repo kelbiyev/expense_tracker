@@ -132,34 +132,26 @@ Map<String, double> calculateCategoryTotals(List<Transaction> transactions) {
   return categoryTotals;
 }
 
-List<PieChartSectionData> buildSections(Map<String, double> categoryTotals) {
-  List<Color> colors = [
-    Colors.red,
-    Colors.blue,
-    Colors.green,
-    Colors.yellow,
-    Colors.purple,
-    Colors.orange,
-    const Color.fromARGB(255, 73, 97, 19),
-  ];
+List<PieChartSectionData> buildSections(Map<String, double> categoryTotals, {int touchedIndex = -1}) {
   List<PieChartSectionData> sections = [];
-  int colorIndex = 0;
+  int index = 0;
 
   categoryTotals.forEach((category, total) {
+    bool isTouched = index == touchedIndex;
     sections.add(
       PieChartSectionData(
         value: total,
-        title: category,
-        color: colors[colorIndex % colors.length],
-        radius: 60,
+        title: isTouched ? category : '',
+        color: getCategoryColor(category),
+        radius: isTouched ? 70 : 60,
+        titleStyle: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 10),
       ),
     );
-    colorIndex++;
+    index++;
   });
 
   return sections;
 }
-
 //MARK: JSON
 String transactionsToJson(List<Transaction> transactions) {
   List<Map<String, dynamic>> mapsList = transactions

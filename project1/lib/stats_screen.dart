@@ -2,15 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'transaction.dart';
 
-class StatsScreen extends StatelessWidget {
+class StatsScreen extends StatefulWidget {
   final List<Transaction> transactions;
 
   const StatsScreen({super.key, required this.transactions});
 
   @override
+  State<StatsScreen> createState() => _StatsScreenState();
+}
+
+class _StatsScreenState extends State<StatsScreen> {
+  int touchedIndex = -1;
+
+  @override
   Widget build(BuildContext context) {
-    final categoryTotals = calculateCategoryTotals(transactions);
-    final totalExpense = calculateExpense(transactions);
+    final categoryTotals = calculateCategoryTotals(widget.transactions);
+    final totalExpense = calculateExpense(widget.transactions);
     final total = categoryTotals.values.fold(0.0, (sum, value) => sum + value);
 
     return Scaffold(
@@ -23,7 +30,22 @@ class StatsScreen extends StatelessWidget {
               SizedBox(
                 height: 300,
                 child: PieChart(
-                  PieChartData(sections: buildSections(categoryTotals)),
+                  PieChartData(
+                    sections: buildSections(categoryTotals,touchedIndex: touchedIndex),
+                    pieTouchData: PieTouchData(
+                      touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                          setState(() {
+                          if(!event.isInterestedForInteractions ||
+                          pieTouchResponse == null ||
+                          pieTouchResponse.touchedSection == null) {
+                            touchedIndex = -1;
+                            return;
+                          }
+                          touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                        });
+                      },   
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
