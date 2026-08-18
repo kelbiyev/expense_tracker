@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../models/transaction.dart';
+import 'package:provider/provider.dart';
+
 import '../core/categories.dart';
 import '../core/formatters.dart';
 
-class StatsPage extends StatefulWidget {
-  final List<Transaction> transactions;
+import '../providers/transaction_provider.dart';
 
-  const StatsPage({super.key, required this.transactions});
+class StatsPage extends StatefulWidget {
+  const StatsPage({super.key});
 
   @override
   State<StatsPage> createState() => _StatsPageState();
@@ -16,17 +17,14 @@ class StatsPage extends StatefulWidget {
 class _StatsPageState extends State<StatsPage> {
   int touchedIndex = -1;
 
-  Map<String, double> _categoryTotals() {
+  Map<String, double> _categoryTotals(List<dynamic> transactions) {
     final Map<String, double> result = {};
-    for (final t in widget.transactions) {
+    for (final t in transactions) {
       if (!t.isExpense) continue;
       result[t.category] = (result[t.category] ?? 0) + t.amount;
     }
     return result;
   }
-
-  double _totalExpense() =>
-      widget.transactions.where((t) => t.isExpense).fold(0.0, (sum, t) => sum + t.amount);
 
   List<PieChartSectionData> _buildSections(Map<String, double> categoryTotals) {
     final sections = <PieChartSectionData>[];
@@ -40,7 +38,7 @@ class _StatsPageState extends State<StatsPage> {
           title: isTouched ? category.label : '',
           color: category.color,
           radius: isTouched ? 70 : 60,
-          titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
+          titleStyle: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 10),
         ),
       );
       index++;
@@ -50,8 +48,8 @@ class _StatsPageState extends State<StatsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryTotals = _categoryTotals();
-    final totalExpense = _totalExpense();
+    final provider = context.watch<TransactionProvider>();
+    final categoryTotals = _categoryTotals(provider.transactions);
     final total = categoryTotals.values.fold(0.0, (sum, value) => sum + value);
 
     return Scaffold(
@@ -107,7 +105,7 @@ class _StatsPageState extends State<StatsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Bu ay ümumi xərc', style: TextStyle(color: Colors.grey)),
-                  Text('${formatCurrency(totalExpense)} ₼', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text('${formatCurrency(provider.expense)} ₼', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ],
               ),
             ],

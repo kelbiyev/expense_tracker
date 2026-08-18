@@ -1,10 +1,13 @@
 import 'package:go_router/go_router.dart';
+
 import '../pages/home_page.dart';
 import '../pages/add_transaction_page.dart';
 import '../pages/stats_page.dart';
 import '../pages/budget_goals_page.dart';
+
 import '../models/transaction.dart';
 import '../models/budget_goal.dart';
+
 import 'app_routes.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -18,11 +21,8 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.stats.path,
       name: AppRoutes.stats.name,
-      builder: (context, state) {
-        final transactions = state.extra as List<Transaction>;
-        return StatsPage(transactions: transactions);
-      },
-    ),
+      builder: (context, state) => const StatsPage(),
+  ),
     GoRoute(
       path: AppRoutes.budgetGoals.path,
       name: AppRoutes.budgetGoals.name,

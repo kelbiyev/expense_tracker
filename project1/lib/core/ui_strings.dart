@@ -1,6 +1,6 @@
-
-
 class AppStrings {
+  const AppStrings._();
+
   static const balance = 'Balance';
   static const income = 'Income';
   static const expense = 'Expense';
