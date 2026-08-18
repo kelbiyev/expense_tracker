@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../core/categories.dart';
 import '../core/formatters.dart';
+import '../core/ui_colors.dart';
+import '../core/ui_strings.dart';
 
 import '../providers/transaction_provider.dart';
 
@@ -38,7 +40,7 @@ class _StatsPageState extends State<StatsPage> {
           title: isTouched ? category.label : '',
           color: category.color,
           radius: isTouched ? 70 : 60,
-          titleStyle: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 10),
+          titleStyle: const TextStyle(color: AppColors.black87, fontWeight: FontWeight.bold, fontSize: 10),
         ),
       );
       index++;
@@ -53,7 +55,7 @@ class _StatsPageState extends State<StatsPage> {
     final total = categoryTotals.values.fold(0.0, (sum, value) => sum + value);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Kateqoriya Statistikası')),
+      appBar: AppBar(title: const Text(AppStrings.categoryStats)),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -95,7 +97,7 @@ class _StatsPageState extends State<StatsPage> {
                       ),
                       const SizedBox(width: 12),
                       Expanded(child: Text(category.label, style: const TextStyle(fontSize: 16))),
-                      Text('${percentage.round()}%', style: const TextStyle(fontSize: 16, color: Colors.grey)),
+                      Text('${percentage.round()}%', style: const TextStyle(fontSize: 16, color: AppColors.grey)),
                     ],
                   ),
                 );
@@ -104,7 +106,7 @@ class _StatsPageState extends State<StatsPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Bu ay ümumi xərc', style: TextStyle(color: Colors.grey)),
+                  const Text(AppStrings.monthlyExpense, style: TextStyle(color: AppColors.grey)),
                   Text('${formatCurrency(provider.expense)} ₼', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ],
               ),

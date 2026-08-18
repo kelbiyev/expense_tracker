@@ -4,6 +4,8 @@ import '../models/budget_goal.dart';
 
 import '../core/categories.dart';
 import '../core/ui_strings.dart';
+import '../core/ui_colors.dart';
+
 
 class NewGoalPage extends StatefulWidget {
   final List<String> availableCategories;
@@ -60,7 +62,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Yeni Hədəf')),
+      appBar: AppBar(title: const Text(AppStrings.newGoal)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -68,7 +70,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              const Text('Kategoriya', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              const Text(AppStrings.categoryAz, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
               ...widget.availableCategories.map((key) {
                 final category = categoryFor(key);
@@ -105,7 +107,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1B5E4F), padding: const EdgeInsets.symmetric(vertical: 14)),
                   onPressed: _save,
-                  child: const Text(AppStrings.save, style: TextStyle(color: Colors.white)),
+                  child: const Text(AppStrings.save, style: TextStyle(color: AppColors.white)),
                 ),
               ),
             ],
@@ -122,17 +124,17 @@ class _NewGoalPageState extends State<NewGoalPage> {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected ? category.color.withValues(alpha: 0.1) : Colors.grey.shade200,
+          color: isSelected ? category.color.withValues(alpha: 0.1) : AppColors.grey.shade200,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: isSelected ? category.color : Colors.transparent, width: 1.5),
         ),
         child: Row(
           children: [
-            Icon(category.icon, color: isSelected ? category.color : Colors.grey),
+            Icon(category.icon, color: isSelected ? category.color : AppColors.grey),
             const SizedBox(width: 12),
             Text(category.label,
                 style: TextStyle(
-                  color: isSelected ? category.color : Colors.grey.shade700,
+                  color: isSelected ? category.color : AppColors.grey.shade700,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 )),
           ],

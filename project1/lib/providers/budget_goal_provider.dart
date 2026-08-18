@@ -21,4 +21,10 @@ class BudgetGoalProvider extends ChangeNotifier {
     await _repository.save(_goals);
     notifyListeners();
   }
+
+  Future<void> remove(String category) async {
+    _goals.removeWhere((g) => g.category == category);
+    await _repository.save(_goals);
+    notifyListeners();
+  }
 }

@@ -4,9 +4,7 @@ import '../pages/home_page.dart';
 import '../pages/add_transaction_page.dart';
 import '../pages/stats_page.dart';
 import '../pages/budget_goals_page.dart';
-
-import '../models/transaction.dart';
-import '../models/budget_goal.dart';
+import '../pages/new_goal_page.dart';
 
 import 'app_routes.dart';
 
@@ -26,18 +24,20 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.budgetGoals.path,
       name: AppRoutes.budgetGoals.name,
-      builder: (context, state) {
-        final args = state.extra as Map<String, dynamic>;
-        return BudgetGoalsPage(
-          transactions: args['transactions'] as List<Transaction>,
-          budgetGoals: args['budgetGoals'] as List<BudgetGoal>,
-        );
-      },
+      builder: (context, state) => const BudgetGoalsPage(),
     ),
     GoRoute(
       path: AppRoutes.addTransaction.path,
       name: AppRoutes.addTransaction.name,
       builder: (context, state) => const AddTransactionPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.newGoal.path,
+      name: AppRoutes.newGoal.name,
+      builder: (context, state) {
+        final availableCategories = state.extra as List<String>;
+        return NewGoalPage(availableCategories: availableCategories);
+      },
     ),
   ],
 );

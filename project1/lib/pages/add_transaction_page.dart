@@ -3,6 +3,7 @@ import '../models/transaction.dart';
 import '../models/transaction_type.dart';
 
 import '../core/ui_colors.dart';
+import '../core/ui_strings.dart';
 import '../core/categories.dart';
 
 class AddTransactionPage extends StatefulWidget {
@@ -71,7 +72,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Kateqoriya seç', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              const Text(AppStrings.chooseCategory, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
               ...kCategories.map((category) {
                 return ListTile(
@@ -97,11 +98,11 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     final amount = double.tryParse(amountController.text.replaceAll(',', '.'));
 
     if (title.isEmpty) {
-      _showMessage('Ad boş ola bilməz');
+      _showMessage(AppStrings.emptyTitleAlert);
       return;
     }
     if (amount == null || amount <= 0) {
-      _showMessage('Məbləğ düzgün rəqəm olmalıdır');
+      _showMessage(AppStrings.falseAmountAlert);
       return;
     }
 
@@ -125,7 +126,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     final category = categoryFor(selectedCategory);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('New Transaction')),
+      appBar: AppBar(title: const Text(AppStrings.newTransaction)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -144,25 +145,25 @@ class _AddTransactionPageState extends State<AddTransactionPage>
                 unselectedLabelColor: AppColors.cardShadow,
                 dividerColor: Colors.transparent,
                 overlayColor: WidgetStateProperty.all(Colors.transparent),
-                tabs: const [Tab(text: 'Xərc'), Tab(text: 'Gəlir')],
+                tabs: const [Tab(text: AppStrings.expenseAz), Tab(text: AppStrings.incomeAz)],
               ),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: titleController,
-              decoration: const InputDecoration(labelText: 'Ad', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: AppStrings.titleAz, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Məbləğ', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: AppStrings.amountAz, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             InkWell(
               onTap: _pickCategory,
               child: InputDecorator(
-                decoration: const InputDecoration(labelText: 'Kategoriya', border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: AppStrings.categoryAz, border: OutlineInputBorder()),
                 child: Row(
                   children: [
                     Icon(category.icon, color: category.color),
@@ -176,14 +177,14 @@ class _AddTransactionPageState extends State<AddTransactionPage>
             InkWell(
               onTap: _pickDate,
               child: InputDecorator(
-                decoration: const InputDecoration(labelText: 'Tarix', border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: AppStrings.dateAz, border: OutlineInputBorder()),
                 child: Text('${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: noteController,
-              decoration: const InputDecoration(labelText: 'Qeyd', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: AppStrings.noteAz, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -191,7 +192,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(vertical: 14)),
                 onPressed: _save,
-                child: const Text('Yadda saxla', style: TextStyle(color: AppColors.white)),
+                child: const Text(AppStrings.save, style: TextStyle(color: AppColors.white)),
               ),
             ),
           ],

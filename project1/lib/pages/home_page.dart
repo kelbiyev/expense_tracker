@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
+import 'package:project1/core/ui_strings.dart';
 import 'package:provider/provider.dart';
 import '../models/transaction.dart';
 import '../core/categories.dart';
 import '../core/formatters.dart';
+import '../core/ui_colors.dart';
 import '../providers/transaction_provider.dart';
 import '../routes/app_routes.dart';
 
@@ -25,7 +27,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Expense Tracker'),
+        title: const Text(AppStrings.expenseTracker),
       ),
       body: Stack(
         children: [
@@ -37,7 +39,7 @@ class _HomePageState extends State<HomePage> {
               ignoring: !isMenuOpen,
               child: GestureDetector(
                 onTap: () => setState(() => isMenuOpen = false),
-                child: Container(color: Colors.black.withValues(alpha: 0.4)),
+                child: Container(color: AppColors.cardShadow.withValues(alpha: 0.4)),
               ),
             ),
           ),
@@ -60,15 +62,15 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        _buildMenuItem('Büdcə Hədəfləri', () {
+                        _buildMenuItem(AppStrings.budgetGoal, () {
                           context.pushNamed(AppRoutes.budgetGoals.name);
                         }),
                         const SizedBox(height: 12),
-                        _buildMenuItem('Kateqoriya Statistikası', () {
+                        _buildMenuItem(AppStrings.categoryStats, () {
                           context.pushNamed(AppRoutes.stats.name);
                         }),
                         const SizedBox(height: 12),
-                        _buildMenuItem('Yeni əməliyyat', () async {
+                        _buildMenuItem(AppStrings.newTransaction, () async {
                           final result = await context.pushNamed<Transaction>(AppRoutes.addTransaction.name);
                           if (result != null && context.mounted) {
                             await context.read<TransactionProvider>().add(result);
@@ -99,9 +101,9 @@ class _HomePageState extends State<HomePage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(30),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 8)],
+          boxShadow: [BoxShadow(color: AppColors.cardShadow.withValues(alpha: 0.15), blurRadius: 8)],
         ),
         child: Text(label, style: const TextStyle(fontSize: 14)),
       ),
@@ -122,20 +124,20 @@ class _HomePageState extends State<HomePage> {
                 color: const Color(0xFF1B5E4F),
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 12, offset: const Offset(0, 6)),
+                  BoxShadow(color: AppColors.cardShadow.withValues(alpha: 0.15), blurRadius: 12, offset: const Offset(0, 6)),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Balance', style: TextStyle(color: Colors.white, fontSize: 18)),
-                  Text('${formatCurrency(provider.balance)} ₼', style: const TextStyle(color: Colors.white, fontSize: 24)),
+                  const Text(AppStrings.balance, style: TextStyle(color: AppColors.white, fontSize: 18)),
+                  Text('${formatCurrency(provider.balance)} ₼', style: const TextStyle(color: AppColors.white, fontSize: 24)),
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      Expanded(child: _summaryBox('Income', provider.income)),
+                      Expanded(child: _summaryBox(AppStrings.income, provider.income)),
                       const SizedBox(width: 12),
-                      Expanded(child: _summaryBox('Expense', provider.expense)),
+                      Expanded(child: _summaryBox(AppStrings.expense, provider.expense)),
                     ],
                   ),
                 ],
@@ -145,7 +147,7 @@ class _HomePageState extends State<HomePage> {
           if (transactions.isEmpty)
             const Padding(
               padding: EdgeInsets.all(32),
-              child: Text('Hələ əməliyyat yoxdur', style: TextStyle(color: Colors.grey)),
+              child: Text(AppStrings.noTransactions, style: TextStyle(color: AppColors.grey)),
             )
           else
             ListView.builder(
@@ -166,8 +168,8 @@ class _HomePageState extends State<HomePage> {
                           onPressed: (context) {
                             context.read<TransactionProvider>().remove(t.id);
                           },
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
+                          backgroundColor: AppColors.red,
+                          foregroundColor: AppColors.white,
                           icon: Icons.delete,
                           label: 'Delete',
                           borderRadius: BorderRadius.circular(16),
@@ -187,12 +189,12 @@ class _HomePageState extends State<HomePage> {
   Widget _summaryBox(String label, double value) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14)),
-          Text('${formatCurrency(value)} ₼', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(label, style: const TextStyle(color: AppColors.white70, fontSize: 14)),
+          Text('${formatCurrency(value)} ₼', style: const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -208,9 +210,9 @@ class _TransactionTile extends StatelessWidget {
     final category = categoryFor(transaction.category);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 3))],
+        boxShadow: [BoxShadow(color: AppColors.cardShadow.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 3))],
       ),
       child: ListTile(
         leading: Container(
@@ -223,7 +225,7 @@ class _TransactionTile extends StatelessWidget {
         subtitle: Text('${category.label} · ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
         trailing: Text(
           '${formatCurrency(transaction.amount)} ₼',
-          style: TextStyle(color: transaction.isExpense ? Colors.red : Colors.green, fontSize: 16),
+          style: TextStyle(color: transaction.isExpense ? AppColors.red : AppColors.green, fontSize: 16),
         ),
         onTap: () {
           showDialog(
@@ -235,10 +237,10 @@ class _TransactionTile extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Category: ${category.label}'),
-                    Text('Amount: ${transaction.amount}'),
-                    Text('Date: ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
-                    Text('Type: ${transaction.type.key}'),
+                    Text('${AppStrings.category} ${category.label}'),
+                    Text('${AppStrings.amount} ${transaction.amount}'),
+                    Text('${AppStrings.date} ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
+                    Text('${AppStrings.type} ${transaction.type.key}'),
                     if (transaction.note != null && transaction.note!.isNotEmpty) Text('Note: ${transaction.note}'),
                   ],
                 ),
