@@ -16,11 +16,6 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const HomePage(),
     ),
     GoRoute(
-      path: AppRoutes.addTransaction.path,
-      name: AppRoutes.addTransaction.name,
-      builder: (context, state) => const AddTransactionPage(),
-    ),
-    GoRoute(
       path: AppRoutes.stats.path,
       name: AppRoutes.stats.name,
       builder: (context, state) {
