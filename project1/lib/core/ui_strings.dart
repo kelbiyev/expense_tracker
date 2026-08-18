@@ -25,6 +25,7 @@ class AppStrings {
   static const falseAmountAlert = 'Məbləğ düzgün rəqəm olmalıdır';
 
   static const categoryAz = 'Kategoriya';
+  static const balanceAz = 'Ümumi balans';
   static const incomeAz   = 'Gəlir';
   static const expenseAz  = 'Xərc';
   static const titleAz = 'Ad';

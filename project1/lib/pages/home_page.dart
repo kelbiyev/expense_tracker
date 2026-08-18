@@ -130,14 +130,14 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(AppStrings.balance, style: TextStyle(color: AppColors.white, fontSize: 18)),
+                  const Text(AppStrings.balanceAz, style: TextStyle(color: AppColors.white, fontSize: 18)),
                   Text('${formatCurrency(provider.balance)} ₼', style: const TextStyle(color: AppColors.white, fontSize: 24)),
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      Expanded(child: _summaryBox(AppStrings.income, provider.income)),
+                      Expanded(child: _summaryBox(AppStrings.incomeAz, provider.income)),
                       const SizedBox(width: 12),
-                      Expanded(child: _summaryBox(AppStrings.expense, provider.expense)),
+                      Expanded(child: _summaryBox(AppStrings.expenseAz, provider.expense)),
                     ],
                   ),
                 ],
