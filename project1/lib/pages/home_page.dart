@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
-import 'package:project1/core/ui_strings.dart';
 import 'package:provider/provider.dart';
+
 import '../models/transaction.dart';
+
 import '../core/categories.dart';
 import '../core/formatters.dart';
 import '../core/ui_colors.dart';
+import '../core/ui_strings.dart';
+
 import '../providers/transaction_provider.dart';
+
 import '../routes/app_routes.dart';
 
 class HomePage extends StatefulWidget {
@@ -121,7 +125,7 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1B5E4F),
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(color: AppColors.cardShadow.withValues(alpha: 0.15), blurRadius: 12, offset: const Offset(0, 6)),
@@ -131,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(AppStrings.balanceAz, style: TextStyle(color: AppColors.white, fontSize: 18)),
-                  Text('${formatCurrency(provider.balance)} ₼', style: const TextStyle(color: AppColors.white, fontSize: 24)),
+                  Text('${formatCurrency(provider.balance)} ${AppStrings.manat}', style: const TextStyle(color: AppColors.white, fontSize: 24)),
                   const SizedBox(height: 20),
                   Row(
                     children: [
@@ -171,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                           backgroundColor: AppColors.red,
                           foregroundColor: AppColors.white,
                           icon: Icons.delete,
-                          label: 'Delete',
+                          label: AppStrings.delete ,
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ],
@@ -194,7 +198,7 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: const TextStyle(color: AppColors.white70, fontSize: 14)),
-          Text('${formatCurrency(value)} ₼', style: const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          Text('${formatCurrency(value)} ${AppStrings.manat}', style: const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -224,7 +228,7 @@ class _TransactionTile extends StatelessWidget {
         title: Text(transaction.title),
         subtitle: Text('${category.label} · ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
         trailing: Text(
-          '${formatCurrency(transaction.amount)} ₼',
+          '${formatCurrency(transaction.amount)} ${AppStrings.manat}',
           style: TextStyle(color: transaction.isExpense ? AppColors.red : AppColors.green, fontSize: 16),
         ),
         onTap: () {
@@ -244,7 +248,7 @@ class _TransactionTile extends StatelessWidget {
                     if (transaction.note != null && transaction.note!.isNotEmpty) Text('Note: ${transaction.note}'),
                   ],
                 ),
-                actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+                actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text(AppStrings.close))],
               );
             },
           );

@@ -39,11 +39,11 @@ class _NewGoalPageState extends State<NewGoalPage> {
     final limit = double.tryParse(limitController.text.replaceAll(',', '.'));
 
     if (selectedCategory == null) {
-      _showMessage('Kateqoriya seçin');
+      _showMessage(AppStrings.chooseCategory);
       return;
     }
     if (limit == null || limit <= 0) {
-      _showMessage('Limit düzgün rəqəm olmalıdır');
+      _showMessage(AppStrings.falseLimitAlert);
       return;
     }
 
@@ -84,7 +84,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
               TextField(
                 controller: limitController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(prefixText: '₼ ', border: OutlineInputBorder()),
+                decoration: const InputDecoration(prefixText: '${AppStrings.manat} ', border: OutlineInputBorder()),
               ),
               const SizedBox(height: 8),
               Text('Bildiriş həddi: ${notificationThreshold.round()}%',
@@ -105,7 +105,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1B5E4F), padding: const EdgeInsets.symmetric(vertical: 14)),
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(vertical: 14)),
                   onPressed: _save,
                   child: const Text(AppStrings.save, style: TextStyle(color: AppColors.white)),
                 ),

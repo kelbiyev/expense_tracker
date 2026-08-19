@@ -57,7 +57,6 @@ class BudgetGoalsPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ---- Ümumi büdcə kartı ----
             Padding(
               padding: const EdgeInsets.all(16),
               child: Container(
@@ -82,7 +81,7 @@ class BudgetGoalsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${formatCurrency(totalSpent)} / ${formatCurrency(totalLimit)} ₼',
+                      '${formatCurrency(totalSpent)} / ${formatCurrency(totalLimit)} ${AppStrings.manat}',
                       style: const TextStyle(
                         color: AppColors.white,
                         fontSize: 22,
@@ -110,7 +109,7 @@ class BudgetGoalsPage extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.all(32),
                 child: Text(
-                  'Hələ hədəf yoxdur',
+                  AppStrings.noBudgetGoal,
                   style: TextStyle(color: AppColors.grey),
                 ),
               )
@@ -133,10 +132,10 @@ class BudgetGoalsPage extends StatelessWidget {
                           onPressed: (context) {
                             context.read<BudgetGoalProvider>().remove(goal.category);
                           },
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
+                          backgroundColor: AppColors.red,
+                          foregroundColor: AppColors.white,
                           icon: Icons.delete,
-                          label: 'Delete',
+                          label: AppStrings.delete,
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ],
@@ -171,7 +170,7 @@ class BudgetGoalsPage extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '${formatCurrency(spent)} / ${formatCurrency(goal.monthlyLimit)} ₼',
+                                '${formatCurrency(spent)} / ${formatCurrency(goal.monthlyLimit)} ${AppStrings.manat}',
                                 style: const TextStyle(fontSize: 13, color: AppColors.grey),
                               ),
                             ],
@@ -193,7 +192,7 @@ class BudgetGoalsPage extends StatelessWidget {
                                 const Icon(Icons.warning_amber_rounded, color: AppColors.orange, size: 16),
                                 const SizedBox(width: 6),
                                 Text(
-                                  '${category.label} limitə yaxınlaşır',
+                                  '${category.label} ${AppStrings.closeToLimit}',
                                   style: const TextStyle(color: AppColors.orange, fontSize: 12),
                                 ),
                               ],

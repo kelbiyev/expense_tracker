@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'routes/app_router.dart';
+
 import 'repositories/transaction_repository.dart';
 import 'repositories/budget_goal_repository.dart';
+
 import 'providers/transaction_provider.dart';
 import 'providers/budget_goal_provider.dart';
 

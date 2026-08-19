@@ -12,4 +12,5 @@ class AppColors {
   static const red = Colors.red;
   static const green = Colors.green;
   static const black87 = Colors.black87;
+  static const transparent = Colors.transparent;
 }
