@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AppColors {
-  const AppColors._();
+class UiColors {
+  const UiColors._();
   
   static const primary = Color(0xFF1B5E4F);
   static const cardShadow = Colors.black;

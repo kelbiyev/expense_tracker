@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:project1/core/ui_strings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/budget_goal.dart';
 
@@ -17,7 +18,7 @@ class BudgetGoalRepository {
           .map((e) => BudgetGoal.fromMap(e as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      debugPrint('BudgetGoalRepository.load parse xətası: $e');
+      debugPrint('${UiStrings.budgetGoalLoadParseError} $e');
       return [];
     }
   }

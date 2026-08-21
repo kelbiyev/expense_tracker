@@ -39,11 +39,11 @@ class _NewGoalPageState extends State<NewGoalPage> {
     final limit = double.tryParse(limitController.text.replaceAll(',', '.'));
 
     if (selectedCategory == null) {
-      _showMessage(AppStrings.chooseCategory);
+      _showMessage(UiStrings.chooseCategory);
       return;
     }
     if (limit == null || limit <= 0) {
-      _showMessage(AppStrings.falseLimitAlert);
+      _showMessage(UiStrings.falseLimitAlert);
       return;
     }
 
@@ -62,7 +62,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.newGoal)),
+      appBar: AppBar(title: const Text(UiStrings.newGoal)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -70,7 +70,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              const Text(AppStrings.categoryAz, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              const Text(UiStrings.categoryAz, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
               ...widget.availableCategories.map((key) {
                 final category = categoryFor(key);
@@ -84,7 +84,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
               TextField(
                 controller: limitController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(prefixText: '${AppStrings.manat} ', border: OutlineInputBorder()),
+                decoration: const InputDecoration(prefixText: '${UiStrings.manat} ', border: OutlineInputBorder()),
               ),
               const SizedBox(height: 8),
               Text('Bildiriş həddi: ${notificationThreshold.round()}%',
@@ -105,9 +105,9 @@ class _NewGoalPageState extends State<NewGoalPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(vertical: 14)),
+                  style: ElevatedButton.styleFrom(backgroundColor: UiColors.primary, padding: const EdgeInsets.symmetric(vertical: 14)),
                   onPressed: _save,
-                  child: const Text(AppStrings.save, style: TextStyle(color: AppColors.white)),
+                  child: const Text(UiStrings.save, style: TextStyle(color: UiColors.white)),
                 ),
               ),
             ],
@@ -124,17 +124,17 @@ class _NewGoalPageState extends State<NewGoalPage> {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected ? category.color.withValues(alpha: 0.1) : AppColors.grey.shade200,
+          color: isSelected ? category.color.withValues(alpha: 0.1) : UiColors.grey.shade200,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: isSelected ? category.color : Colors.transparent, width: 1.5),
         ),
         child: Row(
           children: [
-            Icon(category.icon, color: isSelected ? category.color : AppColors.grey),
+            Icon(category.icon, color: isSelected ? category.color : UiColors.grey),
             const SizedBox(width: 12),
             Text(category.label,
                 style: TextStyle(
-                  color: isSelected ? category.color : AppColors.grey.shade700,
+                  color: isSelected ? category.color : UiColors.grey.shade700,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 )),
           ],

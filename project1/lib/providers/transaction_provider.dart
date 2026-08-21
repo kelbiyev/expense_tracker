@@ -10,8 +10,10 @@ class TransactionProvider extends ChangeNotifier {
 
   List<Transaction> get transactions => _transactions;
 
-  double get income => _transactions.where((t) => !t.isExpense).fold(0.0, (s, t) => s + t.amount);
-  double get expense => _transactions.where((t) => t.isExpense).fold(0.0, (s, t) => s + t.amount);
+  double get income =>
+      _transactions.where((t) => !t.isExpense).fold(0.0, (s, t) => s + t.amount);
+  double get expense =>
+      _transactions.where((t) => t.isExpense).fold(0.0, (s, t) => s + t.amount);
   double get balance => income - expense;
 
   Future<void> load() async {
@@ -19,15 +21,15 @@ class TransactionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> add(Transaction transaction) async {
-    _transactions.add(transaction);
-    await _repository.save(_transactions);
+  Future<void> add(Transaction transaction, {int? categoryId}) async {
+    final created = await _repository.add(transaction, categoryId: categoryId);
+    _transactions.add(created);
     notifyListeners();
   }
 
   Future<void> remove(String id) async {
+    await _repository.remove(id);
     _transactions.removeWhere((t) => t.id == id);
-    await _repository.save(_transactions);
     notifyListeners();
   }
 }

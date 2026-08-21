@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text(AppStrings.expenseTracker),
+        title: const Text(UiStrings.expenseTracker),
       ),
       body: Stack(
         children: [
@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
               ignoring: !isMenuOpen,
               child: GestureDetector(
                 onTap: () => setState(() => isMenuOpen = false),
-                child: Container(color: AppColors.cardShadow.withValues(alpha: 0.4)),
+                child: Container(color: UiColors.cardShadow.withValues(alpha: 0.4)),
               ),
             ),
           ),
@@ -66,15 +66,15 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        _buildMenuItem(AppStrings.budgetGoal, () {
+                        _buildMenuItem(UiStrings.budgetGoal, () {
                           context.pushNamed(AppRoutes.budgetGoals.name);
                         }),
                         const SizedBox(height: 12),
-                        _buildMenuItem(AppStrings.categoryStats, () {
+                        _buildMenuItem(UiStrings.categoryStats, () {
                           context.pushNamed(AppRoutes.stats.name);
                         }),
                         const SizedBox(height: 12),
-                        _buildMenuItem(AppStrings.newTransaction, () async {
+                        _buildMenuItem(UiStrings.newTransaction, () async {
                           final result = await context.pushNamed<Transaction>(AppRoutes.addTransaction.name);
                           if (result != null && context.mounted) {
                             await context.read<TransactionProvider>().add(result);
@@ -105,9 +105,9 @@ class _HomePageState extends State<HomePage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: UiColors.white,
           borderRadius: BorderRadius.circular(30),
-          boxShadow: [BoxShadow(color: AppColors.cardShadow.withValues(alpha: 0.15), blurRadius: 8)],
+          boxShadow: [BoxShadow(color: UiColors.cardShadow.withValues(alpha: 0.15), blurRadius: 8)],
         ),
         child: Text(label, style: const TextStyle(fontSize: 14)),
       ),
@@ -125,23 +125,23 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                color: UiColors.primary,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
-                  BoxShadow(color: AppColors.cardShadow.withValues(alpha: 0.15), blurRadius: 12, offset: const Offset(0, 6)),
+                  BoxShadow(color: UiColors.cardShadow.withValues(alpha: 0.15), blurRadius: 12, offset: const Offset(0, 6)),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(AppStrings.balanceAz, style: TextStyle(color: AppColors.white, fontSize: 18)),
-                  Text('${formatCurrency(provider.balance)} ${AppStrings.manat}', style: const TextStyle(color: AppColors.white, fontSize: 24)),
+                  const Text(UiStrings.balanceAz, style: TextStyle(color: UiColors.white, fontSize: 18)),
+                  Text('${formatCurrency(provider.balance)} ${UiStrings.manat}', style: const TextStyle(color: UiColors.white, fontSize: 24)),
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      Expanded(child: _summaryBox(AppStrings.incomeAz, provider.income)),
+                      Expanded(child: _summaryBox(UiStrings.incomeAz, provider.income)),
                       const SizedBox(width: 12),
-                      Expanded(child: _summaryBox(AppStrings.expenseAz, provider.expense)),
+                      Expanded(child: _summaryBox(UiStrings.expenseAz, provider.expense)),
                     ],
                   ),
                 ],
@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage> {
           if (transactions.isEmpty)
             const Padding(
               padding: EdgeInsets.all(32),
-              child: Text(AppStrings.noTransactions, style: TextStyle(color: AppColors.grey)),
+              child: Text(UiStrings.noTransactions, style: TextStyle(color: UiColors.grey)),
             )
           else
             ListView.builder(
@@ -172,10 +172,10 @@ class _HomePageState extends State<HomePage> {
                           onPressed: (context) {
                             context.read<TransactionProvider>().remove(t.id);
                           },
-                          backgroundColor: AppColors.red,
-                          foregroundColor: AppColors.white,
+                          backgroundColor: UiColors.red,
+                          foregroundColor: UiColors.white,
                           icon: Icons.delete,
-                          label: AppStrings.delete ,
+                          label: UiStrings.delete ,
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ],
@@ -193,12 +193,12 @@ class _HomePageState extends State<HomePage> {
   Widget _summaryBox(String label, double value) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: UiColors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.white70, fontSize: 14)),
-          Text('${formatCurrency(value)} ${AppStrings.manat}', style: const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(label, style: const TextStyle(color: UiColors.white70, fontSize: 14)),
+          Text('${formatCurrency(value)} ${UiStrings.manat}', style: const TextStyle(color: UiColors.white, fontSize: 18, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -214,9 +214,9 @@ class _TransactionTile extends StatelessWidget {
     final category = categoryFor(transaction.category);
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: UiColors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: AppColors.cardShadow.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 3))],
+        boxShadow: [BoxShadow(color: UiColors.cardShadow.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 3))],
       ),
       child: ListTile(
         leading: Container(
@@ -228,8 +228,8 @@ class _TransactionTile extends StatelessWidget {
         title: Text(transaction.title),
         subtitle: Text('${category.label} · ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
         trailing: Text(
-          '${formatCurrency(transaction.amount)} ${AppStrings.manat}',
-          style: TextStyle(color: transaction.isExpense ? AppColors.red : AppColors.green, fontSize: 16),
+          '${formatCurrency(transaction.amount)} ${UiStrings.manat}',
+          style: TextStyle(color: transaction.isExpense ? UiColors.red : UiColors.green, fontSize: 16),
         ),
         onTap: () {
           showDialog(
@@ -241,14 +241,14 @@ class _TransactionTile extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${AppStrings.category} ${category.label}'),
-                    Text('${AppStrings.amount} ${transaction.amount}'),
-                    Text('${AppStrings.date} ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
-                    Text('${AppStrings.type} ${transaction.type.key}'),
+                    Text('${UiStrings.category} ${category.label}'),
+                    Text('${UiStrings.amount} ${transaction.amount}'),
+                    Text('${UiStrings.date} ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
+                    Text('${UiStrings.type} ${transaction.type.key}'),
                     if (transaction.note != null && transaction.note!.isNotEmpty) Text('Note: ${transaction.note}'),
                   ],
                 ),
-                actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text(AppStrings.close))],
+                actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text(UiStrings.close))],
               );
             },
           );

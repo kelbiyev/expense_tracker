@@ -53,7 +53,7 @@ class BudgetGoalsPage extends StatelessWidget {
     final totalLimit = goals.fold(0.0, (sum, goal) => sum + goal.monthlyLimit);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.budgetGoal)),
+      appBar: AppBar(title: const Text(UiStrings.budgetGoal)),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -62,11 +62,11 @@ class BudgetGoalsPage extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: UiColors.primary,
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.cardShadow.withValues(alpha: 0.15),
+                      color: UiColors.cardShadow.withValues(alpha: 0.15),
                       blurRadius: 12,
                       offset: const Offset(0, 6),
                     ),
@@ -76,14 +76,14 @@ class BudgetGoalsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      AppStrings.monthlyBudget,
-                      style: TextStyle(color: AppColors.white70, fontSize: 14),
+                      UiStrings.monthlyBudget,
+                      style: TextStyle(color: UiColors.white70, fontSize: 14),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${formatCurrency(totalSpent)} / ${formatCurrency(totalLimit)} ${AppStrings.manat}',
+                      '${formatCurrency(totalSpent)} / ${formatCurrency(totalLimit)} ${UiStrings.manat}',
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: UiColors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -95,8 +95,8 @@ class BudgetGoalsPage extends StatelessWidget {
                         value: totalLimit == 0
                             ? 0
                             : (totalSpent / totalLimit).clamp(0.0, 1.0),
-                        backgroundColor: AppColors.white.withValues(alpha: 0.2),
-                        color: AppColors.white,
+                        backgroundColor: UiColors.white.withValues(alpha: 0.2),
+                        color: UiColors.white,
                         minHeight: 10,
                       ),
                     ),
@@ -109,8 +109,8 @@ class BudgetGoalsPage extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.all(32),
                 child: Text(
-                  AppStrings.noBudgetGoal,
-                  style: TextStyle(color: AppColors.grey),
+                  UiStrings.noBudgetGoal,
+                  style: TextStyle(color: UiColors.grey),
                 ),
               )
             else
@@ -132,10 +132,10 @@ class BudgetGoalsPage extends StatelessWidget {
                           onPressed: (context) {
                             context.read<BudgetGoalProvider>().remove(goal.category);
                           },
-                          backgroundColor: AppColors.red,
-                          foregroundColor: AppColors.white,
+                          backgroundColor: UiColors.red,
+                          foregroundColor: UiColors.white,
                           icon: Icons.delete,
-                          label: AppStrings.delete,
+                          label: UiStrings.delete,
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ],
@@ -143,11 +143,11 @@ class BudgetGoalsPage extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.white,
+                        color: UiColors.white,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.cardShadow.withValues(alpha: 0.06),
+                            color: UiColors.cardShadow.withValues(alpha: 0.06),
                             blurRadius: 8,
                             offset: const Offset(0, 3),
                           ),
@@ -170,8 +170,8 @@ class BudgetGoalsPage extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '${formatCurrency(spent)} / ${formatCurrency(goal.monthlyLimit)} ${AppStrings.manat}',
-                                style: const TextStyle(fontSize: 13, color: AppColors.grey),
+                                '${formatCurrency(spent)} / ${formatCurrency(goal.monthlyLimit)} ${UiStrings.manat}',
+                                style: const TextStyle(fontSize: 13, color: UiColors.grey),
                               ),
                             ],
                           ),
@@ -181,7 +181,7 @@ class BudgetGoalsPage extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: ratio,
                               color: category.color,
-                              backgroundColor: AppColors.grey.shade200,
+                              backgroundColor: UiColors.grey.shade200,
                               minHeight: 8,
                             ),
                           ),
@@ -189,11 +189,11 @@ class BudgetGoalsPage extends StatelessWidget {
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                const Icon(Icons.warning_amber_rounded, color: AppColors.orange, size: 16),
+                                const Icon(Icons.warning_amber_rounded, color: UiColors.orange, size: 16),
                                 const SizedBox(width: 6),
                                 Text(
-                                  '${category.label} ${AppStrings.closeToLimit}',
-                                  style: const TextStyle(color: AppColors.orange, fontSize: 12),
+                                  '${category.label} ${UiStrings.closeToLimit}',
+                                  style: const TextStyle(color: UiColors.orange, fontSize: 12),
                                 ),
                               ],
                             ),
@@ -212,11 +212,11 @@ class BudgetGoalsPage extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: UiColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   onPressed: () => _openNewGoalScreen(context, goals),
-                  child: const Text(AppStrings.addNewGoal, style: TextStyle(color: AppColors.white)),
+                  child: const Text(UiStrings.addNewGoal, style: TextStyle(color: UiColors.white)),
                 ),
               ),
             ),

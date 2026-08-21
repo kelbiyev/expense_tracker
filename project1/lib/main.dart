@@ -3,11 +3,15 @@ import 'package:provider/provider.dart';
 
 import 'routes/app_router.dart';
 
-import 'repositories/transaction_repository.dart';
+import 'repositories/local_transaction_repository.dart';
 import 'repositories/budget_goal_repository.dart';
+import 'repositories/category_repository.dart';
 
 import 'providers/transaction_provider.dart';
 import 'providers/budget_goal_provider.dart';
+import 'providers/category_provider.dart';
+
+import 'core/ui_strings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,15 +25,18 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => TransactionProvider(TransactionRepository())..load(),
+          create: (_) => TransactionProvider(LocalTransactionRepository())..load(),
         ),
         ChangeNotifierProvider(
           create: (_) => BudgetGoalProvider(BudgetGoalRepository())..load(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => CategoryProvider(CategoryRepository())..load(),
+        ),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        title: 'Expense Tracker',
+        title: UiStrings.expenseTracker,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 2, 46, 3)),
         ),

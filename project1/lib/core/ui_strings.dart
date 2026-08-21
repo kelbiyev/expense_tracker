@@ -1,5 +1,5 @@
-class AppStrings {
-  const AppStrings._();
+class UiStrings {
+  const UiStrings._();
 
   static const balance = 'Balance';
   static const income = 'Income';
@@ -38,5 +38,22 @@ class AppStrings {
   static const noteAz = 'Qeyd';
   
   static const manat = '₼';
-  
+
+
+  static const error = 'Xəta: ';
+  static const loadError = 'Loading xətası: ';
+  static const transactionLoadParseError = 'LocalTransactionRepository.load parse xətası: ';
+  static const budgetGoalLoadParseError = 'BudgetGoalRepository.load parse xətası: ';
+  static const saveError = 'Save xətası: ';
+  static const deleteError = 'Delete xətası: ';
+  static const createError = 'Create xətası: ';
+  static const reloadError = 'Reload xətası: ';
+
+  static const categoryLoadError = 'Kategoriya loading xətası: ';
+  static const categoryAddError = 'Kategoriya add xətası: ';
+  static const categoryDeleteError = 'Kategoriya delete xətası: ';
+  static const categoryFindError = 'Kategoriya serverdə tapılmadı';
+
+  static const apiTransactionRepositoryRequirement = 'ApiTransactionRepository.add() categoryId tələb edir';
+
 }

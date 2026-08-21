@@ -40,7 +40,7 @@ class _StatsPageState extends State<StatsPage> {
           title: isTouched ? category.label : '',
           color: category.color,
           radius: isTouched ? 70 : 60,
-          titleStyle: const TextStyle(color: AppColors.black87, fontWeight: FontWeight.bold, fontSize: 10),
+          titleStyle: const TextStyle(color: UiColors.black87, fontWeight: FontWeight.bold, fontSize: 10),
         ),
       );
       index++;
@@ -55,7 +55,7 @@ class _StatsPageState extends State<StatsPage> {
     final total = categoryTotals.values.fold(0.0, (sum, value) => sum + value);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.categoryStats)),
+      appBar: AppBar(title: const Text(UiStrings.categoryStats)),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -97,7 +97,7 @@ class _StatsPageState extends State<StatsPage> {
                       ),
                       const SizedBox(width: 12),
                       Expanded(child: Text(category.label, style: const TextStyle(fontSize: 16))),
-                      Text('${percentage.round()}%', style: const TextStyle(fontSize: 16, color: AppColors.grey)),
+                      Text('${percentage.round()}%', style: const TextStyle(fontSize: 16, color: UiColors.grey)),
                     ],
                   ),
                 );
@@ -106,8 +106,8 @@ class _StatsPageState extends State<StatsPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(AppStrings.monthlyExpense, style: TextStyle(color: AppColors.grey)),
-                  Text('${formatCurrency(provider.expense)} ${AppStrings.manat}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text(UiStrings.monthlyExpense, style: TextStyle(color: UiColors.grey)),
+                  Text('${formatCurrency(provider.expense)} ${UiStrings.manat}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ],
               ),
             ],

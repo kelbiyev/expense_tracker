@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/transaction.dart';
 import '../models/transaction_type.dart';
+import '../providers/transaction_provider.dart';
+import '../providers/category_provider.dart';
 
 import '../core/ui_colors.dart';
 import '../core/ui_strings.dart';
@@ -72,7 +75,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(AppStrings.chooseCategory, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              const Text(UiStrings.chooseCategory, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
               ...kCategories.map((category) {
                 return ListTile(
@@ -98,11 +101,17 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     final amount = double.tryParse(amountController.text.replaceAll(',', '.'));
 
     if (title.isEmpty) {
-      _showMessage(AppStrings.emptyTitleAlert);
+      _showMessage(UiStrings.emptyTitleAlert);
       return;
     }
     if (amount == null || amount <= 0) {
-      _showMessage(AppStrings.falseAmountAlert);
+      _showMessage(UiStrings.falseAmountAlert);
+      return;
+    }
+
+    final categoryId = context.read<CategoryProvider>().idForKey(selectedCategory);
+    if (categoryId == null) {
+      _showMessage(UiStrings.categoryFindError); 
       return;
     }
 
@@ -114,7 +123,8 @@ class _AddTransactionPageState extends State<AddTransactionPage>
       type: selectedType,
       note: noteController.text.isEmpty ? null : noteController.text,
     );
-    Navigator.pop(context, newTransaction);
+    context.read<TransactionProvider>().add(newTransaction, categoryId: categoryId);
+    Navigator.pop(context);
   }
 
   void _showMessage(String text) {
@@ -126,7 +136,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     final category = categoryFor(selectedCategory);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.newTransaction)),
+      appBar: AppBar(title: const Text(UiStrings.newTransaction)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -138,32 +148,32 @@ class _AddTransactionPageState extends State<AddTransactionPage>
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicatorPadding: const EdgeInsets.all(2),
                 indicator: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.15),
+                  color: UiColors.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                labelColor: AppColors.primary,
-                unselectedLabelColor: AppColors.cardShadow,
+                labelColor: UiColors.primary,
+                unselectedLabelColor: UiColors.cardShadow,
                 dividerColor: Colors.transparent,
                 overlayColor: WidgetStateProperty.all(Colors.transparent),
-                tabs: const [Tab(text: AppStrings.expenseAz), Tab(text: AppStrings.incomeAz)],
+                tabs: const [Tab(text: UiStrings.expenseAz), Tab(text: UiStrings.incomeAz)],
               ),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: titleController,
-              decoration: const InputDecoration(labelText: AppStrings.titleAz, border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: UiStrings.titleAz, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: AppStrings.amountAz, border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: UiStrings.amountAz, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             InkWell(
               onTap: _pickCategory,
               child: InputDecorator(
-                decoration: const InputDecoration(labelText: AppStrings.categoryAz, border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: UiStrings.categoryAz, border: OutlineInputBorder()),
                 child: Row(
                   children: [
                     Icon(category.icon, color: category.color),
@@ -177,22 +187,22 @@ class _AddTransactionPageState extends State<AddTransactionPage>
             InkWell(
               onTap: _pickDate,
               child: InputDecorator(
-                decoration: const InputDecoration(labelText: AppStrings.dateAz, border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: UiStrings.dateAz, border: OutlineInputBorder()),
                 child: Text('${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: noteController,
-              decoration: const InputDecoration(labelText: AppStrings.noteAz, border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: UiStrings.noteAz, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(vertical: 14)),
+                style: ElevatedButton.styleFrom(backgroundColor: UiColors.primary, padding: const EdgeInsets.symmetric(vertical: 14)),
                 onPressed: _save,
-                child: const Text(AppStrings.save, style: TextStyle(color: AppColors.white)),
+                child: const Text(UiStrings.save, style: TextStyle(color: UiColors.white)),
               ),
             ),
           ],
