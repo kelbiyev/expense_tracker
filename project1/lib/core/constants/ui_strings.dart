@@ -5,10 +5,10 @@ class UiStrings {
   static const income = 'Income';
   static const expense = 'Expense';
   static const save = 'Yadda saxla';
-  static const category = 'Category';
-  static const amount = 'Amount';
-  static const date = 'Date';
-  static const type = 'Type';
+  static const category = 'Category:';
+  static const amount = 'Amount:';
+  static const date = 'Date:';
+  static const type = 'Type:';
   static const note = 'Note';
   static const close = 'Close';
   static const delete = 'Delete';

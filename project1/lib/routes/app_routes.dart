@@ -1,10 +1,11 @@
 enum AppRoutes {
-  home('/'),
-  addTransaction('/add-transaction'),
-  stats('/stats'),
-  budgetGoals('/budget-goals'),
-  newGoal('/new-goal');
+  home('/', 'home'),
+  addTransaction('/add-transaction', 'addTransaction'),
+  stats('/stats', 'stats'),
+  budgetGoals('/budget-goals', 'budgetGoals'),
+  newGoal('/new-goal', 'newGoal');
 
-  const AppRoutes(this.path);
   final String path;
+  final String name;
+  const AppRoutes(this.path, this.name);
 }

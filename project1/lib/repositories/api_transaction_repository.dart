@@ -2,17 +2,18 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'transaction_repository.dart';
 import '../models/transaction.dart';
-import '../models/api_transaction.dart';
+import '../models/transaction_api.dart';
 import '../models/transaction_request.dart';
 import '../models/transaction_type.dart';
-import '../core/ui_strings.dart';
+import '../core/constants/ui_strings.dart';
 import '../core/api_config.dart';
+import '../core/categories.dart' as local;
 
 class ApiTransactionRepository implements TransactionRepository {
   @override
   Future<List<Transaction>> load() async {
     final response = await http.get(ApiConfig.transactions());
-
+ 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
       return data
@@ -90,7 +91,7 @@ class ApiTransactionRepository implements TransactionRepository {
     return Transaction(
       id: api.id.toString(),
       title: api.name,
-      category: api.category.displayName,
+      category: local.keyForDisplayName(api.category.displayName),
       amount: api.amount,
       date: api.date,
       type: api.type == 'GELIR'

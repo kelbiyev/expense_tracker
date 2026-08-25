@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 
 import 'routes/app_router.dart';
 
-import 'repositories/local_transaction_repository.dart';
+// import 'repositories/local_transaction_repository.dart';
+import 'repositories/api_transaction_repository.dart';
 import 'repositories/budget_goal_repository.dart';
 import 'repositories/category_repository.dart';
 
@@ -11,7 +12,7 @@ import 'providers/transaction_provider.dart';
 import 'providers/budget_goal_provider.dart';
 import 'providers/category_provider.dart';
 
-import 'core/ui_strings.dart';
+import 'core/constants/ui_strings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,12 +26,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => TransactionProvider(LocalTransactionRepository())..load(),
+          create: (_) => TransactionProvider(ApiTransactionRepository())..load(),
         ),
         ChangeNotifierProvider(
           create: (_) => BudgetGoalProvider(BudgetGoalRepository())..load(),
         ),
         ChangeNotifierProvider(
+          lazy: false, //lazy true olanda provider yaradilmamishdi , ona gore false olundu
           create: (_) => CategoryProvider(CategoryRepository())..load(),
         ),
       ],

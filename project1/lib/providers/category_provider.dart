@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../models/category.dart';
 import '../repositories/category_repository.dart';
+import '../core/categories.dart' as local;
+import '../core/utils/txt_normalize.dart';
 
 class CategoryProvider extends ChangeNotifier {
   final CategoryRepository _repository;
@@ -15,8 +17,22 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  int? idForKey(String key) {
-    final match = _categories.where((c) => c.key == key);
+  int? idForDisplayName(String displayName) {
+    final target = normalizeAz(displayName);
+    final match = _categories.where((c) => normalizeAz(c.displayName) == target);
     return match.isEmpty ? null : match.first.id;
+  }
+
+  Future<void> seedMissing() async {
+    await load(); // serverde hansi category olmagini baxiriq , sonra lazim olanlari elave etmeyi
+    for (final localCategory in local.kCategories) {
+      final exists = idForDisplayName(localCategory.label) != null;
+      if (!exists) {
+        debugPrint('Создаю на сервере: ${localCategory.label}');
+        final name = normalizeAz(localCategory.label).toUpperCase();
+        await _repository.add(name, localCategory.label);
+      }
+    }
+    await load(); // seeding den sonra tekrar oxunma
   }
 }

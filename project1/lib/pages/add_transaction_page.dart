@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../models/transaction.dart';
 import '../models/transaction_type.dart';
+
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
 
-import '../core/ui_colors.dart';
-import '../core/ui_strings.dart';
+import '../core/constants/ui_colors.dart';
+import '../core/constants/ui_strings.dart';
 import '../core/categories.dart';
 
 class AddTransactionPage extends StatefulWidget {
@@ -109,9 +111,14 @@ class _AddTransactionPageState extends State<AddTransactionPage>
       return;
     }
 
-    final categoryId = context.read<CategoryProvider>().idForKey(selectedCategory);
+    // categoryFor(...).label — азербайджанское имя, по которому ищем
+    // совпадение среди серверных displayName (см. Урок 63, гипотеза
+    // требует подтверждения на реальных данных).
+    final categoryLabel = categoryFor(selectedCategory).label;
+    final categoryId = context.read<CategoryProvider>().idForDisplayName(categoryLabel);
+
     if (categoryId == null) {
-      _showMessage(UiStrings.categoryFindError); 
+      _showMessage('Категория "$categoryLabel" не найдена на сервере');
       return;
     }
 
@@ -123,6 +130,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
       type: selectedType,
       note: noteController.text.isEmpty ? null : noteController.text,
     );
+
     context.read<TransactionProvider>().add(newTransaction, categoryId: categoryId);
     Navigator.pop(context);
   }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:project1/core/ui_strings.dart';
+import 'package:project1/core/constants/ui_strings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'transaction_repository.dart';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'utils/txt_normalize.dart';
 
 class Category {
   const Category({required this.key, required this.label, required this.icon, required this.color});
@@ -23,3 +24,10 @@ Category categoryFor(String key) => kCategories.firstWhere(
   (c) => c.key == key,
   orElse: () => const Category(key: 'Other', label: 'Digər', icon: Icons.category, color: Color(0xFF9E9E9E)),
 );
+
+//reversed mapping for categories from server
+String keyForDisplayName(String displayName) {
+  final target = normalizeAz(displayName);
+  final match = kCategories.where((c) => normalizeAz(c.label) == target);
+  return match.isEmpty ? 'Other' : match.first.key;
+}
