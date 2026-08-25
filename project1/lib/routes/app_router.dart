@@ -12,15 +12,18 @@ import '../repositories/api_transaction_repository.dart';
 import '../repositories/budget_target_repository.dart';
 import '../repositories/category_repository.dart';
 import '../repositories/notification_repository.dart';
+import '../repositories/statistics_repository.dart';
 
 import '../providers/transaction_provider.dart';
 import '../providers/budget_target_provider.dart';
 import '../providers/category_provider.dart';
 import '../providers/notification_provider.dart';
+import '../providers/statistics_provider.dart';
 
 import '../models/app_category.dart';
 
 import 'app_routes.dart';
+
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.home.path,
@@ -37,7 +40,7 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.stats.path,
       name: AppRoutes.stats.name,
       builder: (context, state) => ChangeNotifierProvider(
-        create: (_) => TransactionProvider(ApiTransactionRepository())..load(),
+        create: (_) => StatisticsProvider(StatisticsRepository())..load(),
         child: const StatsPage(),
       ),
     ),

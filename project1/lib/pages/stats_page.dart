@@ -7,7 +7,8 @@ import '../core/utils/formatters.dart';
 import '../core/constants/ui_colors.dart';
 import '../core/constants/ui_strings.dart';
 
-import '../providers/transaction_provider.dart';
+import '../providers/statistics_provider.dart';
+import '../models/category_statistics.dart';
 
 class StatsPage extends StatefulWidget {
   const StatsPage({super.key});
@@ -19,40 +20,39 @@ class StatsPage extends StatefulWidget {
 class _StatsPageState extends State<StatsPage> {
   int touchedIndex = -1;
 
-  Map<String, double> _categoryTotals(List<dynamic> transactions) {
-    final Map<String, double> result = {};
-    for (final t in transactions) {
-      if (!t.isExpense) continue;
-      result[t.category] = (result[t.category] ?? 0) + t.amount;
-    }
-    return result;
-  }
-
-  List<PieChartSectionData> _buildSections(Map<String, double> categoryTotals) {
+  List<PieChartSectionData> _buildSections(List<CategoryStatEntry> entries) {
     final sections = <PieChartSectionData>[];
-    int index = 0;
-    categoryTotals.forEach((categoryKey, total) {
-      final bool isTouched = index == touchedIndex;
-      final category = categoryFor(categoryKey);
+    for (var i = 0; i < entries.length; i++) {
+      final entry = entries[i];
+      final isTouched = i == touchedIndex;
+      final localKey = keyForDisplayName(entry.categoryName);
+      final category = categoryFor(localKey);
       sections.add(
         PieChartSectionData(
-          value: total,
+          value: entry.totalAmount,
           title: isTouched ? category.label : '',
           color: category.color,
           radius: isTouched ? 70 : 60,
           titleStyle: const TextStyle(color: UiColors.black87, fontWeight: FontWeight.bold, fontSize: 10),
         ),
       );
-      index++;
-    });
+    }
     return sections;
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<TransactionProvider>();
-    final categoryTotals = _categoryTotals(provider.transactions);
-    final total = categoryTotals.values.fold(0.0, (sum, value) => sum + value);
+    final provider = context.watch<StatisticsProvider>();
+    final stats = provider.categoryStats;
+
+    if (stats == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text(UiStrings.categoryStats)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final entries = stats.categories;
 
     return Scaffold(
       appBar: AppBar(title: const Text(UiStrings.categoryStats)),
@@ -65,7 +65,7 @@ class _StatsPageState extends State<StatsPage> {
                 height: 300,
                 child: PieChart(
                   PieChartData(
-                    sections: _buildSections(categoryTotals),
+                    sections: _buildSections(entries),
                     pieTouchData: PieTouchData(
                       touchCallback: (FlTouchEvent event, pieTouchResponse) {
                         setState(() {
@@ -83,9 +83,9 @@ class _StatsPageState extends State<StatsPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              ...categoryTotals.entries.map((entry) {
-                final category = categoryFor(entry.key);
-                final percentage = total == 0 ? 0 : (entry.value / total * 100);
+              ...entries.map((entry) {
+                final localKey = keyForDisplayName(entry.categoryName);
+                final category = categoryFor(localKey);
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Row(
@@ -97,7 +97,7 @@ class _StatsPageState extends State<StatsPage> {
                       ),
                       const SizedBox(width: 12),
                       Expanded(child: Text(category.label, style: const TextStyle(fontSize: 16))),
-                      Text('${percentage.round()}%', style: const TextStyle(fontSize: 16, color: UiColors.grey)),
+                      Text('${entry.percentage.round()}%', style: const TextStyle(fontSize: 16, color: UiColors.grey)),
                     ],
                   ),
                 );
@@ -107,7 +107,7 @@ class _StatsPageState extends State<StatsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(UiStrings.monthlyExpense, style: TextStyle(color: UiColors.grey)),
-                  Text('${formatCurrency(provider.expense)} ${UiStrings.manat}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text('${formatCurrency(stats.totalExpense)} ${UiStrings.manat}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ],
               ),
             ],
