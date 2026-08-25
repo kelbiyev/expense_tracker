@@ -32,6 +32,12 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(UiStrings.expenseTracker),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () => context.pushNamed(AppRoutes.notifications.name),
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -75,9 +81,14 @@ class _HomePageState extends State<HomePage> {
                         }),
                         const SizedBox(height: 12),
                         _buildMenuItem(UiStrings.newTransaction, () async {
-                          final result = await context.pushNamed<Transaction>(AppRoutes.addTransaction.name);
-                          if (result != null && context.mounted) {
-                            await context.read<TransactionProvider>().add(result);
+                          // AddTransactionPage теперь пишет в СВОЙ собственный
+                          // TransactionProvider (у него отдельный provider на
+                          // своём GoRoute) и возвращается без данных — поэтому
+                          // после возврата просто перезапрашиваем список у
+                          // СВОЕГО провайдера, чтобы увидеть новую операцию.
+                          await context.pushNamed(AppRoutes.addTransaction.name);
+                          if (context.mounted) {
+                            await context.read<TransactionProvider>().load();
                           }
                         }),
                       ],
@@ -248,7 +259,7 @@ class _TransactionTile extends StatelessWidget {
                     if (transaction.note != null && transaction.note!.isNotEmpty) Text('Note: ${transaction.note}'),
                   ],
                 ),
-                actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text(UiStrings.close))],
+                actions: [TextButton(onPressed: () => context.pop(), child: const Text(UiStrings.close))],
               );
             },
           );

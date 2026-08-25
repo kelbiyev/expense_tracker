@@ -1,37 +1,39 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:project1/core/constants/ui_strings.dart';
 import '../core/api_config.dart';
-import '../models/category.dart';
+import '../core/dio_client.dart';
+import '../models/app_category.dart';
 
 class CategoryRepository {
+  final Dio _dio = DioClient.instance;
+
   Future<List<AppCategory>> load() async {
-    final response = await http.get(ApiConfig.categories());
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
+    try {
+      final response = await _dio.get(ApiConfig.categories());
+      final List<dynamic> data = response.data;
       return data.map((json) => AppCategory.fromJson(json)).toList();
-    } else {
-      throw Exception('${UiStrings.categoryLoadError} ${response.statusCode}');
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.categoryLoadError} ${e.response?.statusCode ?? e.message}');
     }
   }
 
   Future<AppCategory> add(String name, String displayName) async {
-    final response = await http.post(
-      ApiConfig.categories(),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'name': name, 'displayName': displayName}),
-    );
-    if (response.statusCode == 200) {
-      return AppCategory.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('${UiStrings.categoryAddError} ${response.statusCode}');
+    try {
+      final response = await _dio.post(
+        ApiConfig.categories(),
+        data: {'name': name, 'displayName': displayName},
+      );
+      return AppCategory.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.categoryAddError} ${e.response?.statusCode ?? e.message}');
     }
   }
 
   Future<void> remove(int id) async {
-    final response = await http.delete(ApiConfig.category(id));
-    if (response.statusCode != 200) {
-      throw Exception('${UiStrings.categoryDeleteError} ${response.statusCode}');
+    try {
+      await _dio.delete(ApiConfig.category(id));
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.categoryDeleteError} ${e.response?.statusCode ?? e.message}');
     }
   }
 }

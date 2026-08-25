@@ -1,17 +1,20 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import '../core/api_config.dart';
+import '../core/dio_client.dart';
 import '../core/constants/ui_strings.dart';
 import '../models/budget_target.dart';
 
 class BudgetTargetRepository {
+  final Dio _dio = DioClient.instance;
+
   Future<List<BudgetTarget>> load() async {
-    final response = await http.get(ApiConfig.budgetTargets());
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
+    try {
+      final response = await _dio.get(ApiConfig.budgetTargets());
+      final List<dynamic> data = response.data;
       return data.map((json) => BudgetTarget.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.loadError} ${e.response?.statusCode ?? e.message}');
     }
-    throw Exception('${UiStrings.loadError} ${response.statusCode}');
   }
 
   Future<BudgetTarget> setTarget({
@@ -19,25 +22,26 @@ class BudgetTargetRepository {
     required double monthlyLimit,
     required double alertThreshold,
   }) async {
-    final response = await http.post(
-      ApiConfig.budgetTargets(),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'categoryId': categoryId,
-        'monthlyLimit': monthlyLimit,
-        'alertThreshold': alertThreshold,
-      }),
-    );
-    if (response.statusCode == 200) {
-      return BudgetTarget.fromJson(jsonDecode(response.body));
+    try {
+      final response = await _dio.post(
+        ApiConfig.budgetTargets(),
+        data: {
+          'categoryId': categoryId,
+          'monthlyLimit': monthlyLimit,
+          'alertThreshold': alertThreshold,
+        },
+      );
+      return BudgetTarget.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.saveError} ${e.response?.statusCode ?? e.message}');
     }
-    throw Exception('${UiStrings.saveError} ${response.statusCode}');
   }
 
   Future<void> remove(int id) async {
-    final response = await http.delete(ApiConfig.budgetTarget(id));
-    if (response.statusCode != 200) {
-      throw Exception('${UiStrings.deleteError} ${response.statusCode}');
+    try {
+      await _dio.delete(ApiConfig.budgetTarget(id));
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.deleteError} ${e.response?.statusCode ?? e.message}');
     }
   }
 }

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
 import '../models/transaction.dart';
 import '../models/transaction_type.dart';
-
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
 
-import '../core/constants/ui_colors.dart';
 import '../core/constants/ui_strings.dart';
+import '../core/constants/ui_colors.dart';
 import '../core/categories.dart';
 
 class AddTransactionPage extends StatefulWidget {
@@ -111,9 +110,6 @@ class _AddTransactionPageState extends State<AddTransactionPage>
       return;
     }
 
-    // categoryFor(...).label — азербайджанское имя, по которому ищем
-    // совпадение среди серверных displayName (см. Урок 63, гипотеза
-    // требует подтверждения на реальных данных).
     final categoryLabel = categoryFor(selectedCategory).label;
     final categoryId = context.read<CategoryProvider>().idForDisplayName(categoryLabel);
 
@@ -132,7 +128,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     );
 
     context.read<TransactionProvider>().add(newTransaction, categoryId: categoryId);
-    Navigator.pop(context);
+    context.pop();
   }
 
   void _showMessage(String text) {

@@ -1,4 +1,4 @@
-import 'category.dart';
+import 'app_category.dart';
 
 class BudgetTarget {
   final int id;

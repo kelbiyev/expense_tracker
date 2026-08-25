@@ -1,9 +1,10 @@
 enum AppRoutes {
   home('/', 'home'),
-  addTransaction('/add-transaction', 'addTransaction'),
+  addTransaction('/add-transaction', 'add-transaction'),
   stats('/stats', 'stats'),
-  budgetGoals('/budget-goals', 'budgetGoals'),
-  newGoal('/new-goal', 'newGoal');
+  budgetGoals('/budget-goals', 'budget-goals'),
+  newGoal('/new-goal', 'new-goal'),
+  notifications('/notifications', 'notifications');
 
   final String path;
   final String name;

@@ -8,49 +8,49 @@ import '../core/utils/formatters.dart';
 import '../core/constants/ui_colors.dart';
 import '../core/constants/ui_strings.dart';
 
-import '../providers/transaction_provider.dart';
-import '../providers/budget_goal_provider.dart';
+import '../providers/budget_target_provider.dart';
+import '../providers/category_provider.dart';
 
 import '../routes/app_routes.dart';
 
-import '../models/budget_goal.dart';
+import '../models/budget_target.dart';
+import '../models/app_category.dart';
 
 class BudgetGoalsPage extends StatelessWidget {
   const BudgetGoalsPage({super.key});
 
-  Map<String, double> _categoryTotals(List transactions) {
-    final Map<String, double> result = {};
-    for (final t in transactions) {
-      if (!t.isExpense) continue;
-      result[t.category] = (result[t.category] ?? 0) + t.amount;
-    }
-    return result;
-  }
+  Future<void> _openNewGoalScreen(
+    BuildContext context,
+    List<BudgetTarget> targets,
+    List<AppCategory> allCategories,
+  ) async {
+    final usedCategoryIds = targets.map((t) => t.category.id).toSet();
+    final available = allCategories.where((c) => !usedCategoryIds.contains(c.id)).toList();
 
-  Future<void> _openNewGoalScreen(BuildContext context, List<BudgetGoal> goals) async {
-    final allKeys = kCategories.map((c) => c.key).toList();
-    final availableKeys =
-        allKeys.where((key) => !goals.any((g) => g.category == key)).toList();
-
-    final result = await context.pushNamed<BudgetGoal>(
+    // Возвращается record (categoryId, monthlyLimit, alertThreshold).
+    final result = await context.pushNamed<(int, double, double)>(
       AppRoutes.newGoal.name,
-      extra: availableKeys,
+      extra: available,
     );
 
     if (result != null && context.mounted) {
-      await context.read<BudgetGoalProvider>().add(result);
+      final (categoryId, monthlyLimit, alertThreshold) = result;
+      await context.read<BudgetTargetProvider>().setTarget(
+            categoryId: categoryId,
+            monthlyLimit: monthlyLimit,
+            alertThreshold: alertThreshold,
+          );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final transactionProvider = context.watch<TransactionProvider>();
-    final goalProvider = context.watch<BudgetGoalProvider>();
-    final goals = goalProvider.goals;
+    final targetProvider = context.watch<BudgetTargetProvider>();
+    final categoryProvider = context.watch<CategoryProvider>();
+    final targets = targetProvider.targets;
 
-    final categoryTotals = _categoryTotals(transactionProvider.transactions);
-    final totalSpent = categoryTotals.values.fold(0.0, (sum, v) => sum + v);
-    final totalLimit = goals.fold(0.0, (sum, goal) => sum + goal.monthlyLimit);
+    final totalSpent = targets.fold(0.0, (sum, t) => sum + t.spentAmount);
+    final totalLimit = targets.fold(0.0, (sum, t) => sum + t.monthlyLimit);
 
     return Scaffold(
       appBar: AppBar(title: const Text(UiStrings.budgetGoal)),
@@ -92,9 +92,7 @@ class BudgetGoalsPage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(6),
                       child: LinearProgressIndicator(
-                        value: totalLimit == 0
-                            ? 0
-                            : (totalSpent / totalLimit).clamp(0.0, 1.0),
+                        value: totalLimit == 0 ? 0 : (totalSpent / totalLimit).clamp(0.0, 1.0),
                         backgroundColor: UiColors.white.withValues(alpha: 0.2),
                         color: UiColors.white,
                         minHeight: 10,
@@ -105,7 +103,7 @@ class BudgetGoalsPage extends StatelessWidget {
               ),
             ),
 
-            if (goals.isEmpty)
+            if (targets.isEmpty)
               const Padding(
                 padding: EdgeInsets.all(32),
                 child: Text(
@@ -114,23 +112,24 @@ class BudgetGoalsPage extends StatelessWidget {
                 ),
               )
             else
-              ...goals.map((goal) {
-                final category = categoryFor(goal.category);
-                final spent = categoryTotals[goal.category] ?? 0;
-                final ratio = goal.progress(spent);
-                final isNearLimit = goal.isNearLimit(spent);
+              ...targets.map((target) {
+                final localKey = keyForDisplayName(target.category.displayName);
+                final category = categoryFor(localKey);
+                final ratio = (target.progressPercentage / 100).clamp(0.0, 1.0);
+                final isNearLimit = target.monthlyLimit > 0 &&
+                    target.progressPercentage >= target.alertThreshold;
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
                   child: Slidable(
-                    key: Key(goal.category),
+                    key: Key(target.id.toString()),
                     endActionPane: ActionPane(
                       motion: const DrawerMotion(),
                       extentRatio: 0.25,
                       children: [
                         SlidableAction(
                           onPressed: (context) {
-                            context.read<BudgetGoalProvider>().remove(goal.category);
+                            context.read<BudgetTargetProvider>().remove(target.id);
                           },
                           backgroundColor: UiColors.red,
                           foregroundColor: UiColors.white,
@@ -170,7 +169,7 @@ class BudgetGoalsPage extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '${formatCurrency(spent)} / ${formatCurrency(goal.monthlyLimit)} ${UiStrings.manat}',
+                                '${formatCurrency(target.spentAmount)} / ${formatCurrency(target.monthlyLimit)} ${UiStrings.manat}',
                                 style: const TextStyle(fontSize: 13, color: UiColors.grey),
                               ),
                             ],
@@ -215,7 +214,7 @@ class BudgetGoalsPage extends StatelessWidget {
                     backgroundColor: UiColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  onPressed: () => _openNewGoalScreen(context, goals),
+                  onPressed: () => _openNewGoalScreen(context, targets, categoryProvider.categories),
                   child: const Text(UiStrings.addNewGoal, style: TextStyle(color: UiColors.white)),
                 ),
               ),

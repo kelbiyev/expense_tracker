@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import '../models/budget_goal.dart';
+import '../models/app_category.dart';
 
 import '../core/categories.dart';
 import '../core/constants/ui_strings.dart';
@@ -8,7 +9,7 @@ import '../core/constants/ui_colors.dart';
 
 
 class NewGoalPage extends StatefulWidget {
-  final List<String> availableCategories;
+  final List<AppCategory> availableCategories;
 
   const NewGoalPage({super.key, required this.availableCategories});
 
@@ -18,7 +19,7 @@ class NewGoalPage extends StatefulWidget {
 
 class _NewGoalPageState extends State<NewGoalPage> {
   final TextEditingController limitController = TextEditingController();
-  String? selectedCategory;
+  AppCategory? selectedCategory;
   double notificationThreshold = 90;
 
   @override
@@ -46,13 +47,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
       _showMessage(UiStrings.falseLimitAlert);
       return;
     }
-
-    final newGoal = BudgetGoal(
-      category: selectedCategory!,
-      monthlyLimit: limit,
-      notificationThreshold: notificationThreshold / 100,
-    );
-    Navigator.pop(context, newGoal);
+    context.pop((selectedCategory!.id, limit, notificationThreshold));
   }
 
   void _showMessage(String text) {
@@ -72,12 +67,11 @@ class _NewGoalPageState extends State<NewGoalPage> {
               const SizedBox(height: 20),
               const Text(UiStrings.categoryAz, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
-              ...widget.availableCategories.map((key) {
-                final category = categoryFor(key);
+              ...widget.availableCategories.map((category) {
                 return _buildCategoryOption(
                   category,
-                  selectedCategory == key,
-                  () => setState(() => selectedCategory = key),
+                  selectedCategory?.id == category.id,
+                  () => setState(() => selectedCategory = category),
                 );
               }),
               const SizedBox(height: 10),
@@ -117,24 +111,27 @@ class _NewGoalPageState extends State<NewGoalPage> {
     );
   }
 
-  Widget _buildCategoryOption(Category category, bool isSelected, VoidCallback onTap) {
+  Widget _buildCategoryOption(AppCategory appCategory, bool isSelected, VoidCallback onTap) {
+    final localKey = keyForDisplayName(appCategory.displayName);
+    final visual = categoryFor(localKey);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected ? category.color.withValues(alpha: 0.1) : UiColors.grey.shade200,
+          color: isSelected ? visual.color.withValues(alpha: 0.1) : UiColors.grey.shade200,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isSelected ? category.color : Colors.transparent, width: 1.5),
+          border: Border.all(color: isSelected ? visual.color : Colors.transparent, width: 1.5),
         ),
         child: Row(
           children: [
-            Icon(category.icon, color: isSelected ? category.color : UiColors.grey),
+            Icon(visual.icon, color: isSelected ? visual.color : UiColors.grey),
             const SizedBox(width: 12),
-            Text(category.label,
+            Text(visual.label,
                 style: TextStyle(
-                  color: isSelected ? category.color : UiColors.grey.shade700,
+                  color: isSelected ? visual.color : UiColors.grey.shade700,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 )),
           ],

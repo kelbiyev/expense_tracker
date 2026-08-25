@@ -1,40 +1,48 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import '../core/api_config.dart';
+import '../core/dio_client.dart';
 import '../core/constants/ui_strings.dart';
 import '../models/app_notification.dart';
 
 class NotificationRepository {
+  final Dio _dio = DioClient.instance;
+
   Future<List<AppNotification>> loadAll() async {
-    final response = await http.get(ApiConfig.notifications());
+    final response = await _get(ApiConfig.notifications());
     return _parseList(response);
   }
 
   Future<List<AppNotification>> loadUnread() async {
-    final response = await http.get(ApiConfig.notificationsUnread());
+    final response = await _get(ApiConfig.notificationsUnread());
     return _parseList(response);
   }
 
   Future<void> markAsRead(int id) async {
-    final response = await http.put(ApiConfig.notificationRead(id));
-    if (response.statusCode != 200) {
-      throw Exception('${UiStrings.error} ${response.statusCode}');
+    try {
+      await _dio.put(ApiConfig.notificationRead(id));
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.error} ${e.response?.statusCode ?? e.message}');
     }
   }
 
   Future<void> markAllAsRead() async {
-    final response = await http.put(ApiConfig.notificationsReadAll());
-    if (response.statusCode != 200) {
-      throw Exception('${UiStrings.error} ${response.statusCode}');
+    try {
+      await _dio.put(ApiConfig.notificationsReadAll());
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.error} ${e.response?.statusCode ?? e.message}');
     }
   }
 
-  List<AppNotification> _parseList(http.Response response) {
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => AppNotification.fromJson(json)).toList();
-    } else {
-      throw Exception('${UiStrings.loadError} ${response.statusCode}');
+  Future<Response> _get(String path) async {
+    try {
+      return await _dio.get(path);
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.loadError} ${e.response?.statusCode ?? e.message}');
     }
+  }
+
+  List<AppNotification> _parseList(Response response) {
+    final List<dynamic> data = response.data;
+    return data.map((json) => AppNotification.fromJson(json)).toList();
   }
 }

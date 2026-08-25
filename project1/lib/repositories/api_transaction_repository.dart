@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'transaction_repository.dart';
 import '../models/transaction.dart';
 import '../models/transaction_api.dart';
@@ -7,28 +6,30 @@ import '../models/transaction_request.dart';
 import '../models/transaction_type.dart';
 import '../core/constants/ui_strings.dart';
 import '../core/api_config.dart';
+import '../core/dio_client.dart';
 import '../core/categories.dart' as local;
 
 class ApiTransactionRepository implements TransactionRepository {
+  final Dio _dio = DioClient.instance;
+
   @override
   Future<List<Transaction>> load() async {
-    final response = await http.get(ApiConfig.transactions());
- 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
+    try {
+      final response = await _dio.get(ApiConfig.transactions());
+      final List<dynamic> data = response.data;
       return data
-          .map((json) => ApiTransaction.fromJson(json))
-          .map(_toTransaction)
-          .toList();
-    } else {
-       throw Exception('${UiStrings.loadError} ${response.statusCode}');
+        .map((json) => TransactionApi.fromJson(json))
+        .map(_toTransaction)
+        .toList();
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.loadError} ${e.response?.statusCode ?? e.message}');
     }
   }
 
   @override
   Future<Transaction> add(Transaction item, {int? categoryId}) async {
     if (categoryId == null) {
-      throw ArgumentError({UiStrings.apiTransactionRepositoryRequirement});
+      throw ArgumentError(UiStrings.apiTransactionRepositoryRequirement);
     }
 
     final request = TransactionRequest(
@@ -39,26 +40,23 @@ class ApiTransactionRepository implements TransactionRepository {
       date: item.date.toIso8601String().split('T').first,
     );
 
-    final response = await http.post(
-      ApiConfig.transactions(),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(request.toJson()),
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final json = jsonDecode(response.body);
-      return _toTransaction(ApiTransaction.fromJson(json));
-    } else {
-      throw Exception('${UiStrings.createError} ${response.statusCode}');
+    try {
+      final response = await _dio.post(
+        ApiConfig.transactions(),
+        data: request.toJson(),
+      );
+      return _toTransaction(TransactionApi.fromJson(response.data));
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.createError} ${e.response?.statusCode ?? e.message}');
     }
   }
 
   @override
   Future<void> remove(String id) async {
-    final response = await http.delete(ApiConfig.transaction(id));
-
-    if (response.statusCode != 200) {
-      throw Exception('${UiStrings.deleteError} ${response.statusCode}');
+    try {
+      await _dio.delete(ApiConfig.transaction(id));
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.deleteError} ${e.response?.statusCode ?? e.message}');
     }
   }
 
@@ -73,21 +71,18 @@ class ApiTransactionRepository implements TransactionRepository {
       date: item.date.toIso8601String().split('T').first,
     );
 
-    final response = await http.patch(
-      ApiConfig.transaction(id),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(request.toJson()),
-    );
-
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      return _toTransaction(ApiTransaction.fromJson(json));
-    } else {
-      throw Exception('${UiStrings.reloadError} ${response.statusCode}');
+    try {
+      final response = await _dio.patch(
+        ApiConfig.transaction(id),
+        data: request.toJson(),
+      );
+      return _toTransaction(TransactionApi.fromJson(response.data));
+    } on DioException catch (e) {
+      throw Exception('${UiStrings.reloadError} ${e.response?.statusCode ?? e.message}');
     }
   }
 
-  Transaction _toTransaction(ApiTransaction api) {
+  Transaction _toTransaction(TransactionApi api) {
     return Transaction(
       id: api.id.toString(),
       title: api.name,

@@ -1,6 +1,6 @@
-import 'category.dart';
+import 'app_category.dart';
 
-class ApiTransaction {
+class TransactionApi {
   final int id;
   final String name;
   final double amount;
@@ -8,7 +8,7 @@ class ApiTransaction {
   final AppCategory category;
   final DateTime date;
 
-  ApiTransaction({
+  TransactionApi({
     required this.id,
     required this.name,
     required this.amount,
@@ -17,8 +17,8 @@ class ApiTransaction {
     required this.date,
   });
 
-  factory ApiTransaction.fromJson(Map<String, dynamic> json) {
-    return ApiTransaction(
+  factory TransactionApi.fromJson(Map<String, dynamic> json) {
+    return TransactionApi(
       id: json['id'],
       name: json['name'],
       amount: (json['amount'] as num).toDouble(),

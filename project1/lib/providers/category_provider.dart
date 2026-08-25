@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/category.dart';
+import '../models/app_category.dart';
 import '../repositories/category_repository.dart';
 import '../core/categories.dart' as local;
 import '../core/utils/txt_normalize.dart';
