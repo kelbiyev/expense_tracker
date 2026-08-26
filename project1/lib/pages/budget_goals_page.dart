@@ -12,7 +12,7 @@ import '../providers/budget_target_provider.dart';
 
 import '../routes/app_routes.dart';
 
-import '../models/budget_target.dart';
+import '../models/goal_model.dart';
 
 class BudgetGoalsPage extends StatelessWidget {
   const BudgetGoalsPage({super.key});
@@ -71,7 +71,7 @@ class BudgetGoalsPage extends StatelessWidget {
     return _buildContent(context, provider.targets);
   }
 
-  Widget _buildContent(BuildContext context, List<BudgetTarget> targets) {
+  Widget _buildContent(BuildContext context, List<GoalModel> targets) {
     final totalSpent = targets.fold(0.0, (sum, t) => sum + t.spentAmount);
     final totalLimit = targets.fold(0.0, (sum, t) => sum + t.monthlyLimit);
 

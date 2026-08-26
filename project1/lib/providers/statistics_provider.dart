@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import '../models/statistics_summary.dart';
-import '../models/category_statistics.dart';
+import '../models/statistics_summary_model.dart';
+import '../models/category_statistics_model.dart';
 import '../repositories/statistics_repository.dart';
 
 class StatisticsProvider extends ChangeNotifier {
@@ -8,13 +8,13 @@ class StatisticsProvider extends ChangeNotifier {
 
   StatisticsProvider(this._repository);
 
-  StatisticsSummary? _summary;
-  CategoryStatistics? _categoryStats;
+  StatisticsSummaryModel? _summary;
+  CategoryStatisticsModel? _categoryStats;
   bool _isLoading = false;
   String? _errorMessage;
 
-  StatisticsSummary? get summary => _summary;
-  CategoryStatistics? get categoryStats => _categoryStats;
+  StatisticsSummaryModel? get summary => _summary;
+  CategoryStatisticsModel? get categoryStats => _categoryStats;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 

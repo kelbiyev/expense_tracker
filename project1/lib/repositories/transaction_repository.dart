@@ -1,7 +1,7 @@
-import '../models/transaction.dart';
+import '../models/transaction_model.dart';
 
 abstract class TransactionRepository {
-  Future<List<Transaction>> load();
-  Future<Transaction> add(Transaction item, {int? categoryId});
-  Future<void> remove(String id);
+  Future<List<TransactionModel>> load();
+  Future<TransactionModel> add(TransactionModel item);
+  Future<void> remove(int id);
 }

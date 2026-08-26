@@ -2,28 +2,30 @@ import 'package:dio/dio.dart';
 import '../core/constants/ui_strings.dart';
 import '../services/api_endpoints.dart';
 import '../core/config/dio_client.dart';
-import '../models/app_category.dart';
+import '../models/categories_model.dart';
 
 class CategoryRepository {
   final Dio _dio = DioClient.instance;
 
-  Future<List<AppCategory>> load() async {
+  Future<List<CategoriesModel>> load() async {
     try {
       final response = await _dio.get(ApiEndpoints.categories);
-      final List<dynamic> data = response.data as List? ?? const [];
-      return data.map((json) => AppCategory.fromJson(json)).toList();
+      final data = response.data as List? ?? const [];
+      return data
+          .map((json) => CategoriesModel.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw Exception('${UiStrings.categoryLoadError} ${e.response?.statusCode ?? e.message}');
     }
   }
 
-  Future<AppCategory> add(String name, String displayName) async {
+  Future<CategoriesModel> add(String name, String displayName) async {
     try {
       final response = await _dio.post(
         ApiEndpoints.categories,
         data: {'name': name, 'displayName': displayName},
       );
-      return AppCategory.fromJson(response.data);
+      return CategoriesModel.fromJson(response.data as Map<String, dynamic>? ?? const {});
     } on DioException catch (e) {
       throw Exception('${UiStrings.categoryAddError} ${e.response?.statusCode ?? e.message}');
     }

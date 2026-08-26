@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../models/app_category.dart';
+import '../models/categories_model.dart';
 
 import '../core/categories.dart';
 import '../core/constants/ui_strings.dart';
@@ -20,7 +20,7 @@ class NewGoalPage extends StatefulWidget {
 
 class _NewGoalPageState extends State<NewGoalPage> {
   final TextEditingController limitController = TextEditingController();
-  AppCategory? selectedCategory;
+  CategoriesModel? selectedCategory;
   double notificationThreshold = 90;
   bool _initialized = false;
 
@@ -123,7 +123,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
     );
   }
 
-  Widget _buildCategoryOption(AppCategory appCategory, bool isSelected, VoidCallback onTap) {
+  Widget _buildCategoryOption(CategoriesModel appCategory, bool isSelected, VoidCallback onTap) {
     final localKey = keyForDisplayName(appCategory.displayName);
     final visual = categoryFor(localKey);
 

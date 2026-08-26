@@ -2,17 +2,17 @@ import 'package:dio/dio.dart';
 import '../services/api_endpoints.dart';
 import '../core/config/dio_client.dart';
 import '../core/constants/ui_strings.dart';
-import '../models/app_notification.dart';
+import '../models/notification_model.dart';
 
 class NotificationRepository {
   final Dio _dio = DioClient.instance;
 
-  Future<List<AppNotification>> loadAll() async {
+  Future<List<NotificationModel>> loadAll() async {
     final response = await _get(ApiEndpoints.notifications);
     return _parseList(response);
   }
 
-  Future<List<AppNotification>> loadUnread() async {
+  Future<List<NotificationModel>> loadUnread() async {
     final response = await _get(ApiEndpoints.notificationsUnread);
     return _parseList(response);
   }
@@ -41,8 +41,8 @@ class NotificationRepository {
     }
   }
 
-  List<AppNotification> _parseList(Response response) {
-    final List<dynamic> data = response.data as List? ?? const [];
-    return data.map((json) => AppNotification.fromJson(json)).toList();
+  List<NotificationModel> _parseList(Response response) {
+    final data = response.data as List? ?? const [];
+    return data.map((json) => NotificationModel.fromJson(json as Map<String, dynamic>)).toList();
   }
 }

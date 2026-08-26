@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/budget_target.dart';
+import '../models/goal_model.dart';
 import '../repositories/budget_target_repository.dart';
 
 class BudgetTargetProvider extends ChangeNotifier {
@@ -7,11 +7,11 @@ class BudgetTargetProvider extends ChangeNotifier {
 
   BudgetTargetProvider(this._repository);
 
-  List<BudgetTarget> _targets = [];
+  List<GoalModel> _targets = [];
   bool _isLoading = false;
   String? _errorMessage;
 
-  List<BudgetTarget> get targets => _targets;
+  List<GoalModel> get targets => _targets;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isEmpty => _targets.isEmpty;

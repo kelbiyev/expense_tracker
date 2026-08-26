@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../services/api_endpoints.dart';
 import 'api_exception.dart';
 
 class DioClient {

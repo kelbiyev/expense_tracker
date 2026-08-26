@@ -2,22 +2,22 @@ import 'package:dio/dio.dart';
 import '../services/api_endpoints.dart';
 import '../core/config/dio_client.dart';
 import '../core/constants/ui_strings.dart';
-import '../models/budget_target.dart';
+import '../models/goal_model.dart';
 
 class BudgetTargetRepository {
   final Dio _dio = DioClient.instance;
 
-  Future<List<BudgetTarget>> load() async {
+  Future<List<GoalModel>> load() async {
     try {
       final response = await _dio.get(ApiEndpoints.budgetTargets);
-      final List<dynamic> data = response.data as List? ?? const [];
-      return data.map((json) => BudgetTarget.fromJson(json)).toList();
+      final data = response.data as List? ?? const [];
+      return data.map((json) => GoalModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw Exception('${UiStrings.loadError} ${e.response?.statusCode ?? e.message}');
     }
   }
 
-  Future<BudgetTarget> setTarget({
+  Future<GoalModel> setTarget({
     required int categoryId,
     required double monthlyLimit,
     required double alertThreshold,
@@ -31,7 +31,7 @@ class BudgetTargetRepository {
           'alertThreshold': alertThreshold,
         },
       );
-      return BudgetTarget.fromJson(response.data);
+      return GoalModel.fromJson(response.data as Map<String, dynamic>? ?? const {});
     } on DioException catch (e) {
       throw Exception('${UiStrings.saveError} ${e.response?.statusCode ?? e.message}');
     }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../models/transaction.dart';
-import '../models/transaction_type.dart';
+import '../models/transaction_model.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
 
@@ -21,11 +20,10 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     with SingleTickerProviderStateMixin {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
-  final TextEditingController noteController = TextEditingController();
 
   late TabController _tabController;
 
-  TransactionType selectedType = TransactionType.expense;
+  String selectedType = TransactionModel.typeExpense;
   String selectedCategory = 'Food';
   DateTime selectedDate = DateTime.now();
   bool _isSaving = false;
@@ -37,7 +35,9 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         setState(() {
-          selectedType = _tabController.index == 0 ? TransactionType.expense : TransactionType.income;
+          selectedType = _tabController.index == 0
+              ? TransactionModel.typeExpense
+              : TransactionModel.typeIncome;
         });
       }
     });
@@ -48,7 +48,6 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     _tabController.dispose();
     titleController.dispose();
     amountController.dispose();
-    noteController.dispose();
     super.dispose();
   }
 
@@ -112,26 +111,26 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     }
 
     final categoryLabel = categoryFor(selectedCategory).label;
-    final categoryId = context.read<CategoryProvider>().idForDisplayName(categoryLabel);
+    final matchedCategory = context.read<CategoryProvider>().findByDisplayName(categoryLabel);
 
-    if (categoryId == null) {
+    if (matchedCategory == null) {
       _showMessage(UiStrings.categoryFindError);
       return;
     }
 
-    final newTransaction = Transaction(
-      title: title,
-      category: selectedCategory,
+    final draft = TransactionModel(
+      id: 0, // заглушка — сервер сам присвоит id, toJson() его не отправляет
+      name: title,
+      category: matchedCategory,
       amount: amount,
       date: selectedDate,
       type: selectedType,
-      note: noteController.text.isEmpty ? null : noteController.text,
     );
 
     setState(() => _isSaving = true);
-    final ok = await context.read<TransactionProvider>().add(newTransaction, categoryId: categoryId);
+    final ok = await context.read<TransactionProvider>().add(draft);
 
-    if (!mounted) return;
+    if (!mounted) return; // await прошёл — виджет мог уже исчезнуть
 
     setState(() => _isSaving = false);
 
@@ -206,11 +205,6 @@ class _AddTransactionPageState extends State<AddTransactionPage>
                 decoration: const InputDecoration(labelText: UiStrings.dateAz, border: OutlineInputBorder()),
                 child: Text('${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: noteController,
-              decoration: const InputDecoration(labelText: UiStrings.noteAz, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             SizedBox(

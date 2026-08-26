@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/transaction.dart';
+import '../models/transaction_model.dart';
 import '../repositories/transaction_repository.dart';
 
 class TransactionProvider extends ChangeNotifier {
@@ -7,11 +7,11 @@ class TransactionProvider extends ChangeNotifier {
 
   TransactionProvider(this._repository);
 
-  List<Transaction> _transactions = [];
+  List<TransactionModel> _transactions = [];
   bool _isLoading = false;
   String? _errorMessage;
 
-  List<Transaction> get transactions => _transactions;
+  List<TransactionModel> get transactions => _transactions;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isEmpty => _transactions.isEmpty;
@@ -38,9 +38,9 @@ class TransactionProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> add(Transaction transaction, {int? categoryId}) async {
+  Future<bool> add(TransactionModel transaction) async {
     try {
-      final created = await _repository.add(transaction, categoryId: categoryId);
+      final created = await _repository.add(transaction);
       _transactions.add(created);
       _sortByDateDesc();
       notifyListeners();
@@ -52,11 +52,7 @@ class TransactionProvider extends ChangeNotifier {
     }
   }
 
-  void _sortByDateDesc() {
-    _transactions.sort((a, b) => b.date.compareTo(a.date));
-  }
-
-  Future<bool> remove(String id) async {
+  Future<bool> remove(int id) async {
     try {
       await _repository.remove(id);
       _transactions.removeWhere((t) => t.id == id);
@@ -67,5 +63,9 @@ class TransactionProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  void _sortByDateDesc() {
+    _transactions.sort((a, b) => b.date.compareTo(a.date));
   }
 }

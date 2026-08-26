@@ -8,7 +8,7 @@ import '../core/constants/ui_colors.dart';
 import '../core/constants/ui_strings.dart';
 
 import '../providers/statistics_provider.dart';
-import '../models/category_statistics.dart';
+import '../models/category_statistics_model.dart';
 
 class StatsPage extends StatefulWidget {
   const StatsPage({super.key});
@@ -20,7 +20,7 @@ class StatsPage extends StatefulWidget {
 class _StatsPageState extends State<StatsPage> {
   int touchedIndex = -1;
 
-  List<PieChartSectionData> _buildSections(List<CategoryStatEntry> entries) {
+  List<PieChartSectionData> _buildSections(List<CategoryStatisticItem> entries) {
     final sections = <PieChartSectionData>[];
     for (var i = 0; i < entries.length; i++) {
       final entry = entries[i];
@@ -44,6 +44,7 @@ class _StatsPageState extends State<StatsPage> {
   Widget build(BuildContext context) {
     final provider = context.watch<StatisticsProvider>();
     final stats = provider.categoryStats;
+
     if (provider.isLoading && stats == null) {
       return Scaffold(
         appBar: AppBar(title: const Text(UiStrings.categoryStats)),

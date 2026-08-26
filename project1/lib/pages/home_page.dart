@@ -3,7 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../models/transaction.dart';
+import '../models/transaction_model.dart';
 
 import '../core/categories.dart';
 import '../core/utils/formatters.dart';
@@ -117,6 +117,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // 4 состояния: loading → error → empty → success.
   Widget _buildBody(TransactionProvider provider) {
     if (provider.isLoading && provider.isEmpty) {
       return const Center(child: CircularProgressIndicator());
@@ -181,7 +182,7 @@ class _HomePageState extends State<HomePage> {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   child: Slidable(
-                    key: Key(t.id),
+                    key: Key(t.id.toString()),
                     endActionPane: ActionPane(
                       motion: const DrawerMotion(),
                       extentRatio: 0.25,
@@ -247,12 +248,13 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _TransactionTile extends StatelessWidget {
-  final Transaction transaction;
+  final TransactionModel transaction;
   const _TransactionTile({required this.transaction});
 
   @override
   Widget build(BuildContext context) {
-    final category = categoryFor(transaction.category);
+    final localKey = keyForDisplayName(transaction.category.displayName);
+    final category = categoryFor(localKey);
     return Container(
       decoration: BoxDecoration(
         color: UiColors.white,
@@ -266,7 +268,7 @@ class _TransactionTile extends StatelessWidget {
           decoration: BoxDecoration(color: category.color.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(10)),
           child: Icon(category.icon, color: category.color),
         ),
-        title: Text(transaction.title),
+        title: Text(transaction.name),
         subtitle: Text('${category.label} · ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
         trailing: Text(
           '${formatCurrency(transaction.amount)} ${UiStrings.manat}',
@@ -277,7 +279,7 @@ class _TransactionTile extends StatelessWidget {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: Text(transaction.title),
+                title: Text(transaction.name),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,8 +287,7 @@ class _TransactionTile extends StatelessWidget {
                     Text('${UiStrings.category} ${category.label}'),
                     Text('${UiStrings.amount} ${transaction.amount}'),
                     Text('${UiStrings.date} ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
-                    Text('${UiStrings.type} ${transaction.type.key}'),
-                    if (transaction.note != null && transaction.note!.isNotEmpty) Text('Note: ${transaction.note}'),
+                    Text('${UiStrings.type} ${transaction.type}'),
                   ],
                 ),
                 actions: [TextButton(onPressed: () => context.pop(), child: const Text(UiStrings.close))],

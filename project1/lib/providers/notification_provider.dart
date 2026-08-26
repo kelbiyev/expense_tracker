@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/app_notification.dart';
+import '../models/notification_model.dart';
 import '../repositories/notification_repository.dart';
 
 class NotificationProvider extends ChangeNotifier {
@@ -7,15 +7,15 @@ class NotificationProvider extends ChangeNotifier {
 
   NotificationProvider(this._repository);
 
-  List<AppNotification> _notifications = [];
+  List<NotificationModel> _notifications = [];
   bool _isLoading = false;
   String? _errorMessage;
 
-  List<AppNotification> get notifications => _notifications;
+  List<NotificationModel> get notifications => _notifications;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isEmpty => _notifications.isEmpty;
-  int get unreadCount => _notifications.where((n) => !n.read).length;
+  int get unreadCount => _notifications.where((n) => !n.isRead).length;
 
   Future<void> load() async {
     _isLoading = true;
@@ -37,13 +37,7 @@ class NotificationProvider extends ChangeNotifier {
       await _repository.markAsRead(id);
       final index = _notifications.indexWhere((n) => n.id == id);
       if (index != -1) {
-        final current = _notifications[index];
-        _notifications[index] = AppNotification(
-          id: current.id,
-          message: current.message,
-          createdAt: current.createdAt,
-          read: true,
-        );
+        _notifications[index] = _notifications[index].copyWith(isRead: true);
         notifyListeners();
       }
     } catch (e) {

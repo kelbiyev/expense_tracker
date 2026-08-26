@@ -1,14 +1,14 @@
-import 'app_category.dart';
+import 'categories_model.dart';
 
-class BudgetTarget {
+class GoalModel {
   final int id;
-  final AppCategory category;
+  final CategoriesModel category;
   final double monthlyLimit;
   final double alertThreshold;
   final double spentAmount;
   final double progressPercentage;
 
-  BudgetTarget({
+  const GoalModel({
     required this.id,
     required this.category,
     required this.monthlyLimit,
@@ -17,10 +17,10 @@ class BudgetTarget {
     required this.progressPercentage,
   });
 
-  factory BudgetTarget.fromJson(Map<String, dynamic> json) {
-    return BudgetTarget(
+  factory GoalModel.fromJson(Map<String, dynamic> json) {
+    return GoalModel(
       id: json['id'] as int? ?? 0,
-      category: AppCategory.fromJson(
+      category: CategoriesModel.fromJson(
         json['category'] as Map<String, dynamic>? ?? const {},
       ),
       monthlyLimit: (json['monthlyLimit'] as num?)?.toDouble() ?? 0,
