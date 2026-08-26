@@ -64,4 +64,14 @@ class UiStrings {
 
   static const retry = 'Yenidən cəhd et';
 
+  static const String noInternet = 'İnternet bağlantısı yoxdur';
+  static const String connectionTimeout = 'Server cavab vermir, yenidən yoxlayın';
+  static const String cancelled = 'Sorğu ləğv edildi';
+  static const String badRequest = 'Sorğu düzgün deyil';
+  static const String notFound = 'Məlumat tapılmadı';
+  static const String validationError = 'Məlumatlar düzgün deyil';
+  static const String serverError = 'Serverdə xəta baş verdi';
+  static const String generic = 'Xəta baş verdi';
+  static const String unexpected = 'Gözlənilməz xəta baş verdi';
+
 }

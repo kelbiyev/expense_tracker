@@ -5,8 +5,8 @@ import '../models/transaction_api.dart';
 import '../models/transaction_request.dart';
 import '../models/transaction_type.dart';
 import '../core/constants/ui_strings.dart';
-import '../core/api_config.dart';
-import '../core/dio_client.dart';
+import '../services/api_endpoints.dart';
+import '../core/config/dio_client.dart';
 import '../core/categories.dart' as local;
 
 class ApiTransactionRepository implements TransactionRepository {
@@ -15,12 +15,12 @@ class ApiTransactionRepository implements TransactionRepository {
   @override
   Future<List<Transaction>> load() async {
     try {
-      final response = await _dio.get(ApiConfig.transactions());
-      final List<dynamic> data = response.data;
+      final response = await _dio.get(ApiEndpoints.transactions);
+      final List<dynamic> data = response.data as List? ?? const [];
       return data
-        .map((json) => TransactionApi.fromJson(json))
-        .map(_toTransaction)
-        .toList();
+          .map((json) => TransactionApi.fromJson(json))
+          .map(_toTransaction)
+          .toList();
     } on DioException catch (e) {
       throw Exception('${UiStrings.loadError} ${e.response?.statusCode ?? e.message}');
     }
@@ -42,7 +42,7 @@ class ApiTransactionRepository implements TransactionRepository {
 
     try {
       final response = await _dio.post(
-        ApiConfig.transactions(),
+        ApiEndpoints.transactions,
         data: request.toJson(),
       );
       return _toTransaction(TransactionApi.fromJson(response.data));
@@ -54,7 +54,7 @@ class ApiTransactionRepository implements TransactionRepository {
   @override
   Future<void> remove(String id) async {
     try {
-      await _dio.delete(ApiConfig.transaction(id));
+      await _dio.delete(ApiEndpoints.transactionById(id));
     } on DioException catch (e) {
       throw Exception('${UiStrings.deleteError} ${e.response?.statusCode ?? e.message}');
     }
@@ -73,7 +73,7 @@ class ApiTransactionRepository implements TransactionRepository {
 
     try {
       final response = await _dio.patch(
-        ApiConfig.transaction(id),
+        ApiEndpoints.transactionById(id),
         data: request.toJson(),
       );
       return _toTransaction(TransactionApi.fromJson(response.data));

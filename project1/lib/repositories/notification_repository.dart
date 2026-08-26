@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import '../core/api_config.dart';
-import '../core/dio_client.dart';
+import '../services/api_endpoints.dart';
+import '../core/config/dio_client.dart';
 import '../core/constants/ui_strings.dart';
 import '../models/app_notification.dart';
 
@@ -8,18 +8,18 @@ class NotificationRepository {
   final Dio _dio = DioClient.instance;
 
   Future<List<AppNotification>> loadAll() async {
-    final response = await _get(ApiConfig.notifications());
+    final response = await _get(ApiEndpoints.notifications);
     return _parseList(response);
   }
 
   Future<List<AppNotification>> loadUnread() async {
-    final response = await _get(ApiConfig.notificationsUnread());
+    final response = await _get(ApiEndpoints.notificationsUnread);
     return _parseList(response);
   }
 
   Future<void> markAsRead(int id) async {
     try {
-      await _dio.put(ApiConfig.notificationRead(id));
+      await _dio.put(ApiEndpoints.notificationRead(id));
     } on DioException catch (e) {
       throw Exception('${UiStrings.error} ${e.response?.statusCode ?? e.message}');
     }
@@ -27,7 +27,7 @@ class NotificationRepository {
 
   Future<void> markAllAsRead() async {
     try {
-      await _dio.put(ApiConfig.notificationsReadAll());
+      await _dio.put(ApiEndpoints.notificationsReadAll);
     } on DioException catch (e) {
       throw Exception('${UiStrings.error} ${e.response?.statusCode ?? e.message}');
     }
@@ -42,7 +42,7 @@ class NotificationRepository {
   }
 
   List<AppNotification> _parseList(Response response) {
-    final List<dynamic> data = response.data;
+    final List<dynamic> data = response.data as List? ?? const [];
     return data.map((json) => AppNotification.fromJson(json)).toList();
   }
 }

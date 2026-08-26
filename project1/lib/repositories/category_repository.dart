@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:project1/core/constants/ui_strings.dart';
-import '../core/api_config.dart';
-import '../core/dio_client.dart';
+import '../core/constants/ui_strings.dart';
+import '../services/api_endpoints.dart';
+import '../core/config/dio_client.dart';
 import '../models/app_category.dart';
 
 class CategoryRepository {
@@ -9,8 +9,8 @@ class CategoryRepository {
 
   Future<List<AppCategory>> load() async {
     try {
-      final response = await _dio.get(ApiConfig.categories());
-      final List<dynamic> data = response.data;
+      final response = await _dio.get(ApiEndpoints.categories);
+      final List<dynamic> data = response.data as List? ?? const [];
       return data.map((json) => AppCategory.fromJson(json)).toList();
     } on DioException catch (e) {
       throw Exception('${UiStrings.categoryLoadError} ${e.response?.statusCode ?? e.message}');
@@ -20,7 +20,7 @@ class CategoryRepository {
   Future<AppCategory> add(String name, String displayName) async {
     try {
       final response = await _dio.post(
-        ApiConfig.categories(),
+        ApiEndpoints.categories,
         data: {'name': name, 'displayName': displayName},
       );
       return AppCategory.fromJson(response.data);
@@ -31,7 +31,7 @@ class CategoryRepository {
 
   Future<void> remove(int id) async {
     try {
-      await _dio.delete(ApiConfig.category(id));
+      await _dio.delete(ApiEndpoints.categoryById(id));
     } on DioException catch (e) {
       throw Exception('${UiStrings.categoryDeleteError} ${e.response?.statusCode ?? e.message}');
     }
