@@ -44,11 +44,36 @@ class _StatsPageState extends State<StatsPage> {
   Widget build(BuildContext context) {
     final provider = context.watch<StatisticsProvider>();
     final stats = provider.categoryStats;
+    if (provider.isLoading && stats == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text(UiStrings.categoryStats)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (provider.errorMessage != null && stats == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text(UiStrings.categoryStats)),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(provider.errorMessage!, textAlign: TextAlign.center),
+                const SizedBox(height: 16),
+                ElevatedButton(onPressed: provider.load, child: const Text(UiStrings.retry)),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     if (stats == null) {
       return Scaffold(
         appBar: AppBar(title: const Text(UiStrings.categoryStats)),
-        body: const Center(child: CircularProgressIndicator()),
+        body: const SizedBox.shrink(),
       );
     }
 

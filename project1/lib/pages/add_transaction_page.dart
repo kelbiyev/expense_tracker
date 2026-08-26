@@ -6,8 +6,8 @@ import '../models/transaction_type.dart';
 import '../providers/transaction_provider.dart';
 import '../providers/category_provider.dart';
 
-import '../core/constants/ui_strings.dart';
 import '../core/constants/ui_colors.dart';
+import '../core/constants/ui_strings.dart';
 import '../core/categories.dart';
 
 class AddTransactionPage extends StatefulWidget {
@@ -28,6 +28,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
   TransactionType selectedType = TransactionType.expense;
   String selectedCategory = 'Food';
   DateTime selectedDate = DateTime.now();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -97,7 +98,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     }
   }
 
-  void _save() {
+  Future<void> _save() async {
     final title = titleController.text.trim();
     final amount = double.tryParse(amountController.text.replaceAll(',', '.'));
 
@@ -114,7 +115,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     final categoryId = context.read<CategoryProvider>().idForDisplayName(categoryLabel);
 
     if (categoryId == null) {
-      _showMessage('Категория "$categoryLabel" не найдена на сервере');
+      _showMessage(UiStrings.categoryFindError);
       return;
     }
 
@@ -127,8 +128,19 @@ class _AddTransactionPageState extends State<AddTransactionPage>
       note: noteController.text.isEmpty ? null : noteController.text,
     );
 
-    context.read<TransactionProvider>().add(newTransaction, categoryId: categoryId);
-    context.pop();
+    setState(() => _isSaving = true);
+    final ok = await context.read<TransactionProvider>().add(newTransaction, categoryId: categoryId);
+
+    if (!mounted) return;
+
+    setState(() => _isSaving = false);
+
+    if (ok) {
+      context.pop();
+    } else {
+      final message = context.read<TransactionProvider>().errorMessage ?? UiStrings.error;
+      _showMessage(message);
+    }
   }
 
   void _showMessage(String text) {
@@ -205,8 +217,14 @@ class _AddTransactionPageState extends State<AddTransactionPage>
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: UiColors.primary, padding: const EdgeInsets.symmetric(vertical: 14)),
-                onPressed: _save,
-                child: const Text(UiStrings.save, style: TextStyle(color: UiColors.white)),
+                onPressed: _isSaving ? null : _save,
+                child: _isSaving
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: UiColors.white),
+                      )
+                    : const Text(UiStrings.save, style: TextStyle(color: UiColors.white)),
               ),
             ),
           ],

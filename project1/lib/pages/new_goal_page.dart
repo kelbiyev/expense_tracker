@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../models/app_category.dart';
 
@@ -7,11 +8,11 @@ import '../core/categories.dart';
 import '../core/constants/ui_strings.dart';
 import '../core/constants/ui_colors.dart';
 
+import '../providers/category_provider.dart';
+import '../providers/budget_target_provider.dart';
 
 class NewGoalPage extends StatefulWidget {
-  final List<AppCategory> availableCategories;
-
-  const NewGoalPage({super.key, required this.availableCategories});
+  const NewGoalPage({super.key});
 
   @override
   State<NewGoalPage> createState() => _NewGoalPageState();
@@ -21,14 +22,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
   final TextEditingController limitController = TextEditingController();
   AppCategory? selectedCategory;
   double notificationThreshold = 90;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.availableCategories.isNotEmpty) {
-      selectedCategory = widget.availableCategories.first;
-    }
-  }
+  bool _initialized = false;
 
   @override
   void dispose() {
@@ -47,6 +41,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
       _showMessage(UiStrings.falseLimitAlert);
       return;
     }
+
     context.pop((selectedCategory!.id, limit, notificationThreshold));
   }
 
@@ -56,6 +51,17 @@ class _NewGoalPageState extends State<NewGoalPage> {
 
   @override
   Widget build(BuildContext context) {
+    final allCategories = context.watch<CategoryProvider>().categories;
+    final existingTargets = context.watch<BudgetTargetProvider>().targets;
+    final usedCategoryIds = existingTargets.map((t) => t.category.id).toSet();
+    final availableCategories =
+        allCategories.where((c) => !usedCategoryIds.contains(c.id)).toList();
+
+    if (!_initialized && availableCategories.isNotEmpty) {
+      selectedCategory = availableCategories.first;
+      _initialized = true;
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text(UiStrings.newGoal)),
       body: Padding(
@@ -67,13 +73,19 @@ class _NewGoalPageState extends State<NewGoalPage> {
               const SizedBox(height: 20),
               const Text(UiStrings.categoryAz, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
-              ...widget.availableCategories.map((category) {
-                return _buildCategoryOption(
-                  category,
-                  selectedCategory?.id == category.id,
-                  () => setState(() => selectedCategory = category),
-                );
-              }),
+              if (availableCategories.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Text(UiStrings.noBudgetGoal, style: TextStyle(color: UiColors.grey)),
+                )
+              else
+                ...availableCategories.map((category) {
+                  return _buildCategoryOption(
+                    category,
+                    selectedCategory?.id == category.id,
+                    () => setState(() => selectedCategory = category),
+                  );
+                }),
               const SizedBox(height: 10),
               TextField(
                 controller: limitController,
@@ -100,7 +112,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: UiColors.primary, padding: const EdgeInsets.symmetric(vertical: 14)),
-                  onPressed: _save,
+                  onPressed: availableCategories.isEmpty ? null : _save,
                   child: const Text(UiStrings.save, style: TextStyle(color: UiColors.white)),
                 ),
               ),

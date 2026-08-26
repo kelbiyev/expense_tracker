@@ -19,12 +19,14 @@ class TransactionApi {
 
   factory TransactionApi.fromJson(Map<String, dynamic> json) {
     return TransactionApi(
-      id: json['id'],
-      name: json['name'],
-      amount: (json['amount'] as num).toDouble(),
-      type: json['type'],
-      category: AppCategory.fromJson(json['category']),
-      date: DateTime.parse(json['date']),
+      id: json['id'] as int? ?? 0,
+      name: json['name'] as String? ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0,
+      type: json['type'] as String? ?? 'XERC',
+      category: AppCategory.fromJson(
+        json['category'] as Map<String, dynamic>? ?? const {},
+      ),
+      date: DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now(),
     );
   }
 }

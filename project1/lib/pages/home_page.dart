@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Stack(
         children: [
-          _buildHomeContent(transactionProvider),
+          _buildBody(transactionProvider),
           AnimatedOpacity(
             opacity: isMenuOpen ? 1.0 : 0.0,
             duration: const Duration(milliseconds: 200),
@@ -80,16 +80,8 @@ class _HomePageState extends State<HomePage> {
                           context.pushNamed(AppRoutes.stats.name);
                         }),
                         const SizedBox(height: 12),
-                        _buildMenuItem(UiStrings.newTransaction, () async {
-                          // AddTransactionPage теперь пишет в СВОЙ собственный
-                          // TransactionProvider (у него отдельный provider на
-                          // своём GoRoute) и возвращается без данных — поэтому
-                          // после возврата просто перезапрашиваем список у
-                          // СВОЕГО провайдера, чтобы увидеть новую операцию.
-                          await context.pushNamed(AppRoutes.addTransaction.name);
-                          if (context.mounted) {
-                            await context.read<TransactionProvider>().load();
-                          }
+                        _buildMenuItem(UiStrings.newTransaction, () {
+                          context.pushNamed(AppRoutes.addTransaction.name);
                         }),
                       ],
                     ),
@@ -123,6 +115,21 @@ class _HomePageState extends State<HomePage> {
         child: Text(label, style: const TextStyle(fontSize: 14)),
       ),
     );
+  }
+
+  Widget _buildBody(TransactionProvider provider) {
+    if (provider.isLoading && provider.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (provider.errorMessage != null && provider.isEmpty) {
+      return _ErrorView(
+        message: provider.errorMessage!,
+        onRetry: provider.load,
+      );
+    }
+
+    return _buildHomeContent(provider);
   }
 
   Widget _buildHomeContent(TransactionProvider provider) {
@@ -186,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                           backgroundColor: UiColors.red,
                           foregroundColor: UiColors.white,
                           icon: Icons.delete,
-                          label: UiStrings.delete ,
+                          label: UiStrings.delete,
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ],
@@ -211,6 +218,29 @@ class _HomePageState extends State<HomePage> {
           Text(label, style: const TextStyle(color: UiColors.white70, fontSize: 14)),
           Text('${formatCurrency(value)} ${UiStrings.manat}', style: const TextStyle(color: UiColors.white, fontSize: 18, fontWeight: FontWeight.bold)),
         ],
+      ),
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+  const _ErrorView({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(message, textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            ElevatedButton(onPressed: onRetry, child: const Text(UiStrings.retry)),
+          ],
+        ),
       ),
     );
   }

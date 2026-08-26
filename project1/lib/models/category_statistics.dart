@@ -15,11 +15,11 @@ class CategoryStatEntry {
 
   factory CategoryStatEntry.fromJson(Map<String, dynamic> json) {
     return CategoryStatEntry(
-      categoryId: json['categoryId'],
-      category: json['category'],
-      categoryName: json['categoryName'],
-      totalAmount: (json['totalAmount'] as num).toDouble(),
-      percentage: (json['percentage'] as num).toDouble(),
+      categoryId: json['categoryId'] as int? ?? 0,
+      category: json['category'] as String? ?? '',
+      categoryName: json['categoryName'] as String? ?? '',
+      totalAmount: (json['totalAmount'] as num?)?.toDouble() ?? 0,
+      percentage: (json['percentage'] as num?)?.toDouble() ?? 0,
     );
   }
 }
@@ -32,9 +32,9 @@ class CategoryStatistics {
 
   factory CategoryStatistics.fromJson(Map<String, dynamic> json) {
     return CategoryStatistics(
-      totalExpense: (json['totalExpense'] as num).toDouble(),
-      categories: (json['categories'] as List)
-          .map((e) => CategoryStatEntry.fromJson(e))
+      totalExpense: (json['totalExpense'] as num?)?.toDouble() ?? 0,
+      categories: (json['categories'] as List? ?? [])
+          .map((e) => CategoryStatEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }

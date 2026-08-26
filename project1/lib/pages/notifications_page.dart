@@ -13,7 +13,6 @@ class NotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NotificationProvider>();
-    final notifications = provider.notifications;
 
     return Scaffold(
       appBar: AppBar(
@@ -26,20 +25,44 @@ class NotificationsPage extends StatelessWidget {
             ),
         ],
       ),
-      body: notifications.isEmpty
-          ? const Center(
-              child: Padding(
-                padding: EdgeInsets.all(32),
-                child: Text(UiStrings.noNotifications, style: TextStyle(color: UiColors.grey)),
-              ),
-            )
-          : ListView.builder(
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                return _NotificationTile(notification: notifications[index]);
-              },
-            ),
+      body: _buildBody(context, provider),
     );
+  }
+
+  Widget _buildBody(BuildContext context, NotificationProvider provider) {
+    if (provider.isLoading && provider.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (provider.errorMessage != null && provider.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(provider.errorMessage!, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              ElevatedButton(onPressed: provider.load, child: const Text(UiStrings.retry)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return provider.notifications.isEmpty
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.all(32),
+              child: Text(UiStrings.noNotifications, style: TextStyle(color: UiColors.grey)),
+            ),
+          )
+        : ListView.builder(
+            itemCount: provider.notifications.length,
+            itemBuilder: (context, index) {
+              return _NotificationTile(notification: provider.notifications[index]);
+            },
+          );
   }
 }
 

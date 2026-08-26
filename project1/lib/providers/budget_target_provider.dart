@@ -4,39 +4,69 @@ import '../repositories/budget_target_repository.dart';
 
 class BudgetTargetProvider extends ChangeNotifier {
   final BudgetTargetRepository _repository;
-  List<BudgetTarget> _targets = [];
 
   BudgetTargetProvider(this._repository);
 
+  List<BudgetTarget> _targets = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+
   List<BudgetTarget> get targets => _targets;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+  bool get isEmpty => _targets.isEmpty;
 
   Future<void> load() async {
-    _targets = await _repository.load();
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
+
+    try {
+      _targets = await _repository.load();
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
-  Future<void> setTarget({
+  Future<bool> setTarget({
     required int categoryId,
     required double monthlyLimit,
     required double alertThreshold,
   }) async {
-    final target = await _repository.setTarget(
-      categoryId: categoryId,
-      monthlyLimit: monthlyLimit,
-      alertThreshold: alertThreshold,
-    );
-    final index = _targets.indexWhere((t) => t.category.id == categoryId);
-    if (index != -1) {
-      _targets[index] = target;
-    } else {
-      _targets.add(target);
+    try {
+      final target = await _repository.setTarget(
+        categoryId: categoryId,
+        monthlyLimit: monthlyLimit,
+        alertThreshold: alertThreshold,
+      );
+      final index = _targets.indexWhere((t) => t.category.id == categoryId);
+      if (index != -1) {
+        _targets[index] = target;
+      } else {
+        _targets.add(target);
+      }
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
     }
-    notifyListeners();
   }
 
-  Future<void> remove(int id) async {
-    await _repository.remove(id);
-    _targets.removeWhere((t) => t.id == id);
-    notifyListeners();
+  Future<bool> remove(int id) async {
+    try {
+      await _repository.remove(id);
+      _targets.removeWhere((t) => t.id == id);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
   }
 }

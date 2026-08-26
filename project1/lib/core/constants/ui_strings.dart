@@ -56,9 +56,12 @@ class UiStrings {
 
   static const apiTransactionRepositoryRequirement = 'ApiTransactionRepository.add() categoryId tələb edir';
 
+  // Уведомления
   static const notifications = 'Bildirişlər';
   static const noNotifications = 'Hələ bildiriş yoxdur';
   static const markAllRead = 'Hamısını oxundu et';
   static const notificationLoadError = 'Bildiriş loading xətası: ';
+
+  static const retry = 'Yenidən cəhd et';
 
 }

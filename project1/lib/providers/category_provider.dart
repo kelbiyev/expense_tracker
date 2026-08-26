@@ -6,15 +6,31 @@ import '../core/utils/txt_normalize.dart';
 
 class CategoryProvider extends ChangeNotifier {
   final CategoryRepository _repository;
-  List<AppCategory> _categories = [];
 
   CategoryProvider(this._repository);
 
+  List<AppCategory> _categories = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+
   List<AppCategory> get categories => _categories;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+  bool get isEmpty => _categories.isEmpty;
 
   Future<void> load() async {
-    _categories = await _repository.load();
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
+
+    try {
+      _categories = await _repository.load();
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   int? idForDisplayName(String displayName) {
@@ -24,7 +40,7 @@ class CategoryProvider extends ChangeNotifier {
   }
 
   Future<void> seedMissing() async {
-    await load(); // serverde hansi category olmagini baxiriq , sonra lazim olanlari elave etmeyi
+    await load();
     for (final localCategory in local.kCategories) {
       final exists = idForDisplayName(localCategory.label) != null;
       if (!exists) {
@@ -33,6 +49,6 @@ class CategoryProvider extends ChangeNotifier {
         await _repository.add(name, localCategory.label);
       }
     }
-    await load(); // seeding den sonra tekrar oxunma
+    await load();
   }
 }

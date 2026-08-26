@@ -19,12 +19,14 @@ class BudgetTarget {
 
   factory BudgetTarget.fromJson(Map<String, dynamic> json) {
     return BudgetTarget(
-      id: json['id'],
-      category: AppCategory.fromJson(json['category']),
-      monthlyLimit: (json['monthlyLimit'] as num).toDouble(),
-      alertThreshold: (json['alertThreshold'] as num).toDouble(),
-      spentAmount: (json['spentAmount'] as num).toDouble(),
-      progressPercentage: (json['progressPercentage'] as num).toDouble(),
+      id: json['id'] as int? ?? 0,
+      category: AppCategory.fromJson(
+        json['category'] as Map<String, dynamic>? ?? const {},
+      ),
+      monthlyLimit: (json['monthlyLimit'] as num?)?.toDouble() ?? 0,
+      alertThreshold: (json['alertThreshold'] as num?)?.toDouble() ?? 0,
+      spentAmount: (json['spentAmount'] as num?)?.toDouble() ?? 0,
+      progressPercentage: (json['progressPercentage'] as num?)?.toDouble() ?? 0,
     );
   }
 }

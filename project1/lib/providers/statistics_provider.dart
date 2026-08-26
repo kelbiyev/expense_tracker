@@ -10,13 +10,29 @@ class StatisticsProvider extends ChangeNotifier {
 
   StatisticsSummary? _summary;
   CategoryStatistics? _categoryStats;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   StatisticsSummary? get summary => _summary;
   CategoryStatistics? get categoryStats => _categoryStats;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
   Future<void> load({String? month}) async {
-    _summary = await _repository.loadSummary(month: month);
-    _categoryStats = await _repository.loadCategoryStats(month: month);
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
+
+    try {
+      final summaryFuture = _repository.loadSummary(month: month);
+      final categoryStatsFuture = _repository.loadCategoryStats(month: month);
+      _summary = await summaryFuture;
+      _categoryStats = await categoryStatsFuture;
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

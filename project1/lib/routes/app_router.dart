@@ -8,22 +8,13 @@ import '../pages/budget_goals_page.dart';
 import '../pages/new_goal_page.dart';
 import '../pages/notifications_page.dart';
 
-import '../repositories/api_transaction_repository.dart';
-import '../repositories/budget_target_repository.dart';
-import '../repositories/category_repository.dart';
 import '../repositories/notification_repository.dart';
 import '../repositories/statistics_repository.dart';
 
-import '../providers/transaction_provider.dart';
-import '../providers/budget_target_provider.dart';
-import '../providers/category_provider.dart';
 import '../providers/notification_provider.dart';
 import '../providers/statistics_provider.dart';
 
-import '../models/app_category.dart';
-
 import 'app_routes.dart';
-
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.home.path,
@@ -31,10 +22,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.home.path,
       name: AppRoutes.home.name,
-      builder: (context, state) => ChangeNotifierProvider(
-        create: (_) => TransactionProvider(ApiTransactionRepository())..load(),
-        child: const HomePage(),
-      ),
+      builder: (context, state) => const HomePage(),
     ),
     GoRoute(
       path: AppRoutes.stats.path,
@@ -47,40 +35,17 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.budgetGoals.path,
       name: AppRoutes.budgetGoals.name,
-      builder: (context, state) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) => BudgetTargetProvider(BudgetTargetRepository())..load(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => CategoryProvider(CategoryRepository())..load(),
-          ),
-        ],
-        child: const BudgetGoalsPage(),
-      ),
+      builder: (context, state) => const BudgetGoalsPage(),
     ),
     GoRoute(
       path: AppRoutes.addTransaction.path,
       name: AppRoutes.addTransaction.name,
-      builder: (context, state) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) => TransactionProvider(ApiTransactionRepository()),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => CategoryProvider(CategoryRepository())..load(),
-          ),
-        ],
-        child: const AddTransactionPage(),
-      ),
+      builder: (context, state) => const AddTransactionPage(),
     ),
     GoRoute(
       path: AppRoutes.newGoal.path,
       name: AppRoutes.newGoal.name,
-      builder: (context, state) {
-        final availableCategories = state.extra as List<AppCategory>;
-        return NewGoalPage(availableCategories: availableCategories);
-      },
+      builder: (context, state) => const NewGoalPage(),
     ),
     GoRoute(
       path: AppRoutes.notifications.path,

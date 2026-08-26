@@ -13,10 +13,10 @@ class AppNotification {
 
   factory AppNotification.fromJson(Map<String, dynamic> json) {
     return AppNotification(
-      id: json['id'],
-      message: json['message'],
-      createdAt: DateTime.parse(json['createdAt']),
-      read: json['read'],
+      id: json['id'] as int? ?? 0,
+      message: json['message'] as String? ?? '',
+      createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now(),
+      read: json['read'] as bool? ?? false,
     );
   }
 }
