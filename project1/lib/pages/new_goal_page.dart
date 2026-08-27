@@ -8,8 +8,8 @@ import '../core/categories.dart';
 import '../core/constants/ui_strings.dart';
 import '../core/constants/ui_colors.dart';
 
-import '../providers/category_provider.dart';
-import '../providers/budget_target_provider.dart';
+import '../providers/categories_provider.dart';
+import '../providers/goal_provider.dart';
 
 class NewGoalPage extends StatefulWidget {
   const NewGoalPage({super.key});
@@ -51,8 +51,8 @@ class _NewGoalPageState extends State<NewGoalPage> {
 
   @override
   Widget build(BuildContext context) {
-    final allCategories = context.watch<CategoryProvider>().categories;
-    final existingTargets = context.watch<BudgetTargetProvider>().targets;
+    final allCategories = context.watch<CategoriesProvider>().categories;
+    final existingTargets = context.watch<GoalProvider>().targets;
     final usedCategoryIds = existingTargets.map((t) => t.category.id).toSet();
     final availableCategories =
         allCategories.where((c) => !usedCategoryIds.contains(c.id)).toList();

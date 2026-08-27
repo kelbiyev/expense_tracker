@@ -10,27 +10,25 @@ class ApiException implements Exception {
 
   factory ApiException.fromDio(DioException e) {
 
-    if (e.type == DioExceptionType.connectionTimeout ||// server responsu timed out
+    if (e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.sendTimeout ||
         e.type == DioExceptionType.receiveTimeout) {
       return const ApiException(UiStrings.connectionTimeout);
     }
 
-    if (e.type == DioExceptionType.connectionError) {//no internet erroru
+    if (e.type == DioExceptionType.connectionError) {
       return const ApiException(UiStrings.noInternet);
     }
 
-    if (e.type == DioExceptionType.cancel) {//request ləğv edildi
+    if (e.type == DioExceptionType.cancel) {
       return const ApiException(UiStrings.cancelled);
     }
 
-    
-    if (e.type == DioExceptionType.badResponse) {//serverin cavabı amma error code ilə
+    if (e.type == DioExceptionType.badResponse) {
       final code = e.response?.statusCode;
       return ApiException(_messageForStatus(code), statusCode: code);
     }
-
-    // 5) Остальные случаи
+ 
     return const ApiException(UiStrings.unexpected);
   }
 
@@ -44,4 +42,11 @@ class ApiException implements Exception {
 
   @override
   String toString() => message;
+
+  static String messageFrom(Object error) {
+    if (error is DioException && error.error is ApiException) {
+      return (error.error as ApiException).message;
+    }
+    return UiStrings.unexpected;
+  }
 }

@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../models/transaction_model.dart';
 import '../providers/transaction_provider.dart';
-import '../providers/category_provider.dart';
+import '../providers/categories_provider.dart';
 
 import '../core/constants/ui_colors.dart';
 import '../core/constants/ui_strings.dart';
@@ -111,7 +111,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     }
 
     final categoryLabel = categoryFor(selectedCategory).label;
-    final matchedCategory = context.read<CategoryProvider>().findByDisplayName(categoryLabel);
+    final matchedCategory = context.read<CategoriesProvider>().findByDisplayName(categoryLabel);
 
     if (matchedCategory == null) {
       _showMessage(UiStrings.categoryFindError);
@@ -119,7 +119,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     }
 
     final draft = TransactionModel(
-      id: 0, // заглушка — сервер сам присвоит id, toJson() его не отправляет
+      id: 0, 
       name: title,
       category: matchedCategory,
       amount: amount,
@@ -130,7 +130,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     setState(() => _isSaving = true);
     final ok = await context.read<TransactionProvider>().add(draft);
 
-    if (!mounted) return; // await прошёл — виджет мог уже исчезнуть
+    if (!mounted) return; 
 
     setState(() => _isSaving = false);
 

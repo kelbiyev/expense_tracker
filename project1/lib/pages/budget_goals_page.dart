@@ -8,7 +8,7 @@ import '../core/utils/formatters.dart';
 import '../core/constants/ui_colors.dart';
 import '../core/constants/ui_strings.dart';
 
-import '../providers/budget_target_provider.dart';
+import '../providers/goal_provider.dart';
 
 import '../routes/app_routes.dart';
 
@@ -23,7 +23,7 @@ class BudgetGoalsPage extends StatelessWidget {
     if (result == null || !context.mounted) return;
 
     final (categoryId, monthlyLimit, alertThreshold) = result;
-    final ok = await context.read<BudgetTargetProvider>().setTarget(
+    final ok = await context.read<GoalProvider>().setTarget(
           categoryId: categoryId,
           monthlyLimit: monthlyLimit,
           alertThreshold: alertThreshold,
@@ -32,14 +32,14 @@ class BudgetGoalsPage extends StatelessWidget {
     if (!context.mounted) return;
 
     if (!ok) {
-      final message = context.read<BudgetTargetProvider>().errorMessage ?? UiStrings.error;
+      final message = context.read<GoalProvider>().errorMessage ?? UiStrings.error;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final targetProvider = context.watch<BudgetTargetProvider>();
+    final targetProvider = context.watch<GoalProvider>();
 
     return Scaffold(
       appBar: AppBar(title: const Text(UiStrings.budgetGoal)),
@@ -47,7 +47,7 @@ class BudgetGoalsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, BudgetTargetProvider provider) {
+  Widget _buildBody(BuildContext context, GoalProvider provider) {
     if (provider.isLoading && provider.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -150,7 +150,7 @@ class BudgetGoalsPage extends StatelessWidget {
                     children: [
                       SlidableAction(
                         onPressed: (context) {
-                          context.read<BudgetTargetProvider>().remove(target.id);
+                          context.read<GoalProvider>().remove(target.id);
                         },
                         backgroundColor: UiColors.red,
                         foregroundColor: UiColors.white,

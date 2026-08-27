@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
+import '../core/config/api_exception.dart';
 import '../models/notification_model.dart';
-import '../repositories/notification_repository.dart';
+import '../services/notification_service.dart';
 
 class NotificationProvider extends ChangeNotifier {
-  final NotificationRepository _repository;
+  final NotificationService _service;
 
-  NotificationProvider(this._repository);
+  NotificationProvider(this._service);
 
   List<NotificationModel> _notifications = [];
   bool _isLoading = false;
@@ -23,9 +24,9 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _notifications = await _repository.loadAll();
+      _notifications = await _service.getAll();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -34,24 +35,24 @@ class NotificationProvider extends ChangeNotifier {
 
   Future<void> markAsRead(int id) async {
     try {
-      await _repository.markAsRead(id);
+      await _service.markAsRead(id);
       final index = _notifications.indexWhere((n) => n.id == id);
       if (index != -1) {
         _notifications[index] = _notifications[index].copyWith(isRead: true);
         notifyListeners();
       }
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
       notifyListeners();
     }
   }
 
   Future<void> markAllAsRead() async {
     try {
-      await _repository.markAllAsRead();
+      await _service.markAllAsRead();
       await load();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
       notifyListeners();
     }
   }

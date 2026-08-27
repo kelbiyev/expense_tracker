@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
+import '../core/config/api_exception.dart';
 import '../models/categories_model.dart';
-import '../repositories/category_repository.dart';
+import '../services/categories_service.dart';
 import '../core/categories.dart' as local;
 import '../core/utils/txt_normalize.dart';
 
-class CategoryProvider extends ChangeNotifier {
-  final CategoryRepository _repository;
+class CategoriesProvider extends ChangeNotifier {
+  final CategoriesService _service;
 
-  CategoryProvider(this._repository);
+  CategoriesProvider(this._service);
 
   List<CategoriesModel> _categories = [];
   bool _isLoading = false;
@@ -24,9 +25,9 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _categories = await _repository.load();
+      _categories = await _service.getAll();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -46,7 +47,7 @@ class CategoryProvider extends ChangeNotifier {
       if (!exists) {
         debugPrint('Создаю на сервере: ${localCategory.label}');
         final name = normalizeAz(localCategory.label).toUpperCase();
-        await _repository.add(name, localCategory.label);
+        await _service.create(name, localCategory.label);
       }
     }
     await load();

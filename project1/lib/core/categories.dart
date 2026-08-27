@@ -25,7 +25,6 @@ Category categoryFor(String key) => kCategories.firstWhere(
   orElse: () => const Category(key: 'Other', label: 'Digər', icon: Icons.category, color: Color(0xFF9E9E9E)),
 );
 
-//reversed mapping for categories from server
 String keyForDisplayName(String displayName) {
   final target = normalizeAz(displayName);
   final match = kCategories.where((c) => normalizeAz(c.label) == target);

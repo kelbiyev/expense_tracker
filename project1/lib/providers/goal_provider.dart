@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
+import '../core/config/api_exception.dart';
 import '../models/goal_model.dart';
-import '../repositories/budget_target_repository.dart';
+import '../services/goal_service.dart';
 
-class BudgetTargetProvider extends ChangeNotifier {
-  final BudgetTargetRepository _repository;
+class GoalProvider extends ChangeNotifier {
+  final GoalService _service;
 
-  BudgetTargetProvider(this._repository);
+  GoalProvider(this._service);
 
   List<GoalModel> _targets = [];
   bool _isLoading = false;
@@ -22,9 +23,9 @@ class BudgetTargetProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _targets = await _repository.load();
+      _targets = await _service.getAll();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -37,7 +38,7 @@ class BudgetTargetProvider extends ChangeNotifier {
     required double alertThreshold,
   }) async {
     try {
-      final target = await _repository.setTarget(
+      final target = await _service.create(
         categoryId: categoryId,
         monthlyLimit: monthlyLimit,
         alertThreshold: alertThreshold,
@@ -51,7 +52,7 @@ class BudgetTargetProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
       notifyListeners();
       return false;
     }
@@ -59,12 +60,12 @@ class BudgetTargetProvider extends ChangeNotifier {
 
   Future<bool> remove(int id) async {
     try {
-      await _repository.remove(id);
+      await _service.delete(id);
       _targets.removeWhere((t) => t.id == id);
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
       notifyListeners();
       return false;
     }

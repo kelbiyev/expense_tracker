@@ -4,13 +4,13 @@ import 'package:provider/provider.dart';
 import 'routes/app_router.dart';
 import 'core/constants/ui_strings.dart';
 
-import 'repositories/api_transaction_repository.dart';
-import 'repositories/category_repository.dart';
-import 'repositories/budget_target_repository.dart';
+import 'services/transaction_service.dart';
+import 'services/categories_service.dart';
+import 'services/goal_service.dart';
 
 import 'providers/transaction_provider.dart';
-import 'providers/category_provider.dart';
-import 'providers/budget_target_provider.dart';
+import 'providers/categories_provider.dart';
+import 'providers/goal_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,13 +24,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => TransactionProvider(ApiTransactionRepository())..load(),
+          create: (_) => TransactionProvider(TransactionService())..load(),
         ),
         ChangeNotifierProvider(
-          create: (_) => CategoryProvider(CategoryRepository())..load(),
+          create: (_) => CategoriesProvider(CategoriesService())..load(),
         ),
         ChangeNotifierProvider(
-          create: (_) => BudgetTargetProvider(BudgetTargetRepository())..load(),
+          create: (_) => GoalProvider(GoalService())..load(),
         ),
       ],
       child: MaterialApp.router(

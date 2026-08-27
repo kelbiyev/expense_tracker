@@ -8,8 +8,8 @@ import '../pages/budget_goals_page.dart';
 import '../pages/new_goal_page.dart';
 import '../pages/notifications_page.dart';
 
-import '../repositories/notification_repository.dart';
-import '../repositories/statistics_repository.dart';
+import '../services/notification_service.dart';
+import '../services/statistics_service.dart';
 
 import '../providers/notification_provider.dart';
 import '../providers/statistics_provider.dart';
@@ -28,7 +28,7 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.stats.path,
       name: AppRoutes.stats.name,
       builder: (context, state) => ChangeNotifierProvider(
-        create: (_) => StatisticsProvider(StatisticsRepository())..load(),
+        create: (_) => StatisticsProvider(StatisticsService())..load(),
         child: const StatsPage(),
       ),
     ),
@@ -51,7 +51,7 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.notifications.path,
       name: AppRoutes.notifications.name,
       builder: (context, state) => ChangeNotifierProvider(
-        create: (_) => NotificationProvider(NotificationRepository())..load(),
+        create: (_) => NotificationProvider(NotificationService())..load(),
         child: const NotificationsPage(),
       ),
     ),

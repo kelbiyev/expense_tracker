@@ -81,6 +81,11 @@ class _HomePageState extends State<HomePage> {
                         }),
                         const SizedBox(height: 12),
                         _buildMenuItem(UiStrings.newTransaction, () {
+                          // TransactionProvider теперь общий (создан в
+                          // main.dart) — AddTransactionPage пишет в тот же
+                          // самый экземпляр, notifyListeners() сам долетит
+                          // сюда через context.watch. Ручной перезапрос
+                          // после push больше не нужен.
                           context.pushNamed(AppRoutes.addTransaction.name);
                         }),
                       ],

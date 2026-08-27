@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
+import '../core/config/api_exception.dart';
 import '../models/transaction_model.dart';
-import '../repositories/transaction_repository.dart';
+import '../services/transaction_service.dart';
 
 class TransactionProvider extends ChangeNotifier {
-  final TransactionRepository _repository;
+  final TransactionService _service;
 
-  TransactionProvider(this._repository);
+  TransactionProvider(this._service);
 
   List<TransactionModel> _transactions = [];
   bool _isLoading = false;
@@ -28,10 +29,10 @@ class TransactionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _transactions = await _repository.load();
+      _transactions = await _service.getAll();
       _sortByDateDesc();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -40,13 +41,13 @@ class TransactionProvider extends ChangeNotifier {
 
   Future<bool> add(TransactionModel transaction) async {
     try {
-      final created = await _repository.add(transaction);
+      final created = await _service.create(transaction);
       _transactions.add(created);
       _sortByDateDesc();
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
       notifyListeners();
       return false;
     }
@@ -54,12 +55,12 @@ class TransactionProvider extends ChangeNotifier {
 
   Future<bool> remove(int id) async {
     try {
-      await _repository.remove(id);
+      await _service.delete(id);
       _transactions.removeWhere((t) => t.id == id);
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
       notifyListeners();
       return false;
     }

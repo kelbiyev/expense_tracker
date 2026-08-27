@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart';
+import '../core/config/api_exception.dart';
 import '../models/statistics_summary_model.dart';
 import '../models/category_statistics_model.dart';
-import '../repositories/statistics_repository.dart';
+import '../services/statistics_service.dart';
 
 class StatisticsProvider extends ChangeNotifier {
-  final StatisticsRepository _repository;
+  final StatisticsService _service;
 
-  StatisticsProvider(this._repository);
+  StatisticsProvider(this._service);
 
   StatisticsSummaryModel? _summary;
   CategoryStatisticsModel? _categoryStats;
@@ -24,12 +25,12 @@ class StatisticsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final summaryFuture = _repository.loadSummary(month: month);
-      final categoryStatsFuture = _repository.loadCategoryStats(month: month);
+      final summaryFuture = _service.getSummary(month: month);
+      final categoryStatsFuture = _service.getCategoryStatistics(month: month);
       _summary = await summaryFuture;
       _categoryStats = await categoryStatsFuture;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiException.messageFrom(e);
     } finally {
       _isLoading = false;
       notifyListeners();
