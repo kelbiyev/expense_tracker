@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 
-import '../core/categories.dart';
+import '../core/constants/ui_categories.dart';
 import '../core/utils/formatters.dart';
 import '../core/constants/ui_colors.dart';
 import '../core/constants/ui_strings.dart';
@@ -10,14 +10,17 @@ import '../core/constants/ui_strings.dart';
 import '../providers/statistics_provider.dart';
 import '../models/category_statistics_model.dart';
 
-class StatsPage extends StatefulWidget {
-  const StatsPage({super.key});
+import '../widgets/app_error_view.dart';
+import '../widgets/app_legend_tile.dart';
+
+class StatisticsPage extends StatefulWidget {
+  const StatisticsPage({super.key});
 
   @override
-  State<StatsPage> createState() => _StatsPageState();
+  State<StatisticsPage> createState() => _StatisticsPageState();
 }
 
-class _StatsPageState extends State<StatsPage> {
+class _StatisticsPageState extends State<StatisticsPage> {
   int touchedIndex = -1;
 
   List<PieChartSectionData> _buildSections(List<CategoryStatisticItem> entries) {
@@ -25,8 +28,8 @@ class _StatsPageState extends State<StatsPage> {
     for (var i = 0; i < entries.length; i++) {
       final entry = entries[i];
       final isTouched = i == touchedIndex;
-      final localKey = keyForDisplayName(entry.categoryName);
-      final category = categoryFor(localKey);
+      final localKey = UiCategories.keyForDisplayName(entry.categoryName);
+      final category = UiCategories.byKey(localKey);
       sections.add(
         PieChartSectionData(
           value: entry.totalAmount,
@@ -55,19 +58,7 @@ class _StatsPageState extends State<StatsPage> {
     if (provider.errorMessage != null && stats == null) {
       return Scaffold(
         appBar: AppBar(title: const Text(UiStrings.categoryStats)),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(provider.errorMessage!, textAlign: TextAlign.center),
-                const SizedBox(height: 16),
-                ElevatedButton(onPressed: provider.load, child: const Text(UiStrings.retry)),
-              ],
-            ),
-          ),
-        ),
+        body: AppErrorView(message: provider.errorMessage!, onRetry: provider.load),
       );
     }
 
@@ -109,25 +100,7 @@ class _StatsPageState extends State<StatsPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              ...entries.map((entry) {
-                final localKey = keyForDisplayName(entry.categoryName);
-                final category = categoryFor(localKey);
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(color: category.color, shape: BoxShape.circle),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text(category.label, style: const TextStyle(fontSize: 16))),
-                      Text('${entry.percentage.round()}%', style: const TextStyle(fontSize: 16, color: UiColors.grey)),
-                    ],
-                  ),
-                );
-              }),
+              ...entries.map((entry) => AppLegendTile(entry: entry)),
               const Divider(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

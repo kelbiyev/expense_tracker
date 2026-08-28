@@ -3,9 +3,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../models/transaction_model.dart';
-
-import '../core/categories.dart';
 import '../core/utils/formatters.dart';
 import '../core/constants/ui_colors.dart';
 import '../core/constants/ui_strings.dart';
@@ -13,6 +10,10 @@ import '../core/constants/ui_strings.dart';
 import '../providers/transaction_provider.dart';
 
 import '../routes/app_routes.dart';
+
+import '../widgets/app_error_view.dart';
+import '../widgets/app_summary_box.dart';
+import '../widgets/app_transaction_tile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -35,7 +36,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
-            onPressed: () => context.pushNamed(AppRoutes.notifications.name),
+            onPressed: () => context.pushNamed(AppRoutes.notification.name),
           ),
         ],
       ),
@@ -73,20 +74,15 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         _buildMenuItem(UiStrings.budgetGoal, () {
-                          context.pushNamed(AppRoutes.budgetGoals.name);
+                          context.pushNamed(AppRoutes.goals.name);
                         }),
                         const SizedBox(height: 12),
                         _buildMenuItem(UiStrings.categoryStats, () {
-                          context.pushNamed(AppRoutes.stats.name);
+                          context.pushNamed(AppRoutes.statistics.name);
                         }),
                         const SizedBox(height: 12),
                         _buildMenuItem(UiStrings.newTransaction, () {
-                          // TransactionProvider теперь общий (создан в
-                          // main.dart) — AddTransactionPage пишет в тот же
-                          // самый экземпляр, notifyListeners() сам долетит
-                          // сюда через context.watch. Ручной перезапрос
-                          // после push больше не нужен.
-                          context.pushNamed(AppRoutes.addTransaction.name);
+                          context.pushNamed(AppRoutes.transaction.name);
                         }),
                       ],
                     ),
@@ -122,17 +118,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // 4 состояния: loading → error → empty → success.
   Widget _buildBody(TransactionProvider provider) {
     if (provider.isLoading && provider.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (provider.errorMessage != null && provider.isEmpty) {
-      return _ErrorView(
-        message: provider.errorMessage!,
-        onRetry: provider.load,
-      );
+      return AppErrorView(message: provider.errorMessage!, onRetry: provider.load);
     }
 
     return _buildHomeContent(provider);
@@ -158,14 +150,14 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(UiStrings.balanceAz, style: TextStyle(color: UiColors.white, fontSize: 18)),
+                  const Text(UiStrings.balance, style: TextStyle(color: UiColors.white, fontSize: 18)),
                   Text('${formatCurrency(provider.balance)} ${UiStrings.manat}', style: const TextStyle(color: UiColors.white, fontSize: 24)),
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      Expanded(child: _summaryBox(UiStrings.incomeAz, provider.income)),
+                      Expanded(child: AppSummaryBox(label: UiStrings.income, value: provider.income)),
                       const SizedBox(width: 12),
-                      Expanded(child: _summaryBox(UiStrings.expenseAz, provider.expense)),
+                      Expanded(child: AppSummaryBox(label: UiStrings.expense, value: provider.expense)),
                     ],
                   ),
                 ],
@@ -204,102 +196,12 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                    child: _TransactionTile(transaction: t),
+                    child: AppTransactionTile(transaction: t),
                   ),
                 );
               },
             ),
         ],
-      ),
-    );
-  }
-
-  Widget _summaryBox(String label, double value) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: UiColors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(color: UiColors.white70, fontSize: 14)),
-          Text('${formatCurrency(value)} ${UiStrings.manat}', style: const TextStyle(color: UiColors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
-}
-
-class _ErrorView extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-  const _ErrorView({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            ElevatedButton(onPressed: onRetry, child: const Text(UiStrings.retry)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TransactionTile extends StatelessWidget {
-  final TransactionModel transaction;
-  const _TransactionTile({required this.transaction});
-
-  @override
-  Widget build(BuildContext context) {
-    final localKey = keyForDisplayName(transaction.category.displayName);
-    final category = categoryFor(localKey);
-    return Container(
-      decoration: BoxDecoration(
-        color: UiColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: UiColors.cardShadow.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 3))],
-      ),
-      child: ListTile(
-        leading: Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(color: category.color.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(10)),
-          child: Icon(category.icon, color: category.color),
-        ),
-        title: Text(transaction.name),
-        subtitle: Text('${category.label} · ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
-        trailing: Text(
-          '${formatCurrency(transaction.amount)} ${UiStrings.manat}',
-          style: TextStyle(color: transaction.isExpense ? UiColors.red : UiColors.green, fontSize: 16),
-        ),
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text(transaction.name),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${UiStrings.category} ${category.label}'),
-                    Text('${UiStrings.amount} ${transaction.amount}'),
-                    Text('${UiStrings.date} ${transaction.date.day}/${transaction.date.month}/${transaction.date.year}'),
-                    Text('${UiStrings.type} ${transaction.type}'),
-                  ],
-                ),
-                actions: [TextButton(onPressed: () => context.pop(), child: const Text(UiStrings.close))],
-              );
-            },
-          );
-        },
       ),
     );
   }

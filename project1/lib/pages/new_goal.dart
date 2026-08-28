@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../models/categories_model.dart';
 
-import '../core/categories.dart';
+import '../core/constants/ui_categories.dart';
 import '../core/constants/ui_strings.dart';
 import '../core/constants/ui_colors.dart';
 
@@ -71,7 +71,7 @@ class _NewGoalPageState extends State<NewGoalPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              const Text(UiStrings.categoryAz, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              const Text(UiStrings.category, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
               if (availableCategories.isEmpty)
                 const Padding(
@@ -124,8 +124,8 @@ class _NewGoalPageState extends State<NewGoalPage> {
   }
 
   Widget _buildCategoryOption(CategoriesModel appCategory, bool isSelected, VoidCallback onTap) {
-    final localKey = keyForDisplayName(appCategory.displayName);
-    final visual = categoryFor(localKey);
+    final localKey = UiCategories.keyForDisplayName(appCategory.displayName);
+    final visual = UiCategories.byKey(localKey);
 
     return GestureDetector(
       onTap: onTap,

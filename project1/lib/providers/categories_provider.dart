@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../core/config/api_exception.dart';
 import '../models/categories_model.dart';
 import '../services/categories_service.dart';
-import '../core/categories.dart' as local;
+import '../core/constants/ui_categories.dart';
 import '../core/utils/txt_normalize.dart';
 
 class CategoriesProvider extends ChangeNotifier {
@@ -42,7 +42,7 @@ class CategoriesProvider extends ChangeNotifier {
 
   Future<void> seedMissing() async {
     await load();
-    for (final localCategory in local.kCategories) {
+    for (final localCategory in UiCategories.all) {
       final exists = findByDisplayName(localCategory.label) != null;
       if (!exists) {
         debugPrint('Создаю на сервере: ${localCategory.label}');

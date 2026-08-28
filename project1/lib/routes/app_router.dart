@@ -1,12 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../pages/home_page.dart';
-import '../pages/add_transaction_page.dart';
-import '../pages/stats_page.dart';
-import '../pages/budget_goals_page.dart';
-import '../pages/new_goal_page.dart';
-import '../pages/notifications_page.dart';
+import '../pages/home.dart';
+import '../pages/transaction.dart';
+import '../pages/statistics.dart';
+import '../pages/goals.dart';
+import '../pages/new_goal.dart';
+import '../pages/notification.dart';
 
 import '../services/notification_service.dart';
 import '../services/statistics_service.dart';
@@ -18,6 +19,9 @@ import 'app_routes.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.home.path,
+  errorBuilder: (context, state) => const Scaffold(
+    body: Center(child: Text('Səhifə tapılmadı')),
+  ),
   routes: [
     GoRoute(
       path: AppRoutes.home.path,
@@ -25,22 +29,22 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const HomePage(),
     ),
     GoRoute(
-      path: AppRoutes.stats.path,
-      name: AppRoutes.stats.name,
+      path: AppRoutes.statistics.path,
+      name: AppRoutes.statistics.name,
       builder: (context, state) => ChangeNotifierProvider(
         create: (_) => StatisticsProvider(StatisticsService())..load(),
-        child: const StatsPage(),
+        child: const StatisticsPage(),
       ),
     ),
     GoRoute(
-      path: AppRoutes.budgetGoals.path,
-      name: AppRoutes.budgetGoals.name,
-      builder: (context, state) => const BudgetGoalsPage(),
+      path: AppRoutes.goals.path,
+      name: AppRoutes.goals.name,
+      builder: (context, state) => const GoalsPage(),
     ),
     GoRoute(
-      path: AppRoutes.addTransaction.path,
-      name: AppRoutes.addTransaction.name,
-      builder: (context, state) => const AddTransactionPage(),
+      path: AppRoutes.transaction.path,
+      name: AppRoutes.transaction.name,
+      builder: (context, state) => const TransactionPage(),
     ),
     GoRoute(
       path: AppRoutes.newGoal.path,
@@ -48,11 +52,11 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const NewGoalPage(),
     ),
     GoRoute(
-      path: AppRoutes.notifications.path,
-      name: AppRoutes.notifications.name,
+      path: AppRoutes.notification.path,
+      name: AppRoutes.notification.name,
       builder: (context, state) => ChangeNotifierProvider(
         create: (_) => NotificationProvider(NotificationService())..load(),
-        child: const NotificationsPage(),
+        child: const NotificationPage(),
       ),
     ),
   ],

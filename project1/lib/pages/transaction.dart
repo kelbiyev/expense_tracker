@@ -7,16 +7,16 @@ import '../providers/categories_provider.dart';
 
 import '../core/constants/ui_colors.dart';
 import '../core/constants/ui_strings.dart';
-import '../core/categories.dart';
+import '../core/constants/ui_categories.dart';
 
-class AddTransactionPage extends StatefulWidget {
-  const AddTransactionPage({super.key});
+class TransactionPage extends StatefulWidget {
+  const TransactionPage({super.key});
 
   @override
-  State<AddTransactionPage> createState() => _AddTransactionPageState();
+  State<TransactionPage> createState() => _TransactionPageState();
 }
 
-class _AddTransactionPageState extends State<AddTransactionPage>
+class _TransactionPageState extends State<TransactionPage>
     with SingleTickerProviderStateMixin {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
@@ -78,7 +78,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
             children: [
               const Text(UiStrings.chooseCategory, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
-              ...kCategories.map((category) {
+              ...UiCategories.all.map((category) {
                 return ListTile(
                   leading: Icon(category.icon, color: category.color),
                   title: Text(category.label),
@@ -110,7 +110,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
       return;
     }
 
-    final categoryLabel = categoryFor(selectedCategory).label;
+    final categoryLabel = UiCategories.byKey(selectedCategory).label;
     final matchedCategory = context.read<CategoriesProvider>().findByDisplayName(categoryLabel);
 
     if (matchedCategory == null) {
@@ -148,7 +148,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
 
   @override
   Widget build(BuildContext context) {
-    final category = categoryFor(selectedCategory);
+    final category = UiCategories.byKey(selectedCategory);
 
     return Scaffold(
       appBar: AppBar(title: const Text(UiStrings.newTransaction)),
@@ -170,25 +170,25 @@ class _AddTransactionPageState extends State<AddTransactionPage>
                 unselectedLabelColor: UiColors.cardShadow,
                 dividerColor: Colors.transparent,
                 overlayColor: WidgetStateProperty.all(Colors.transparent),
-                tabs: const [Tab(text: UiStrings.expenseAz), Tab(text: UiStrings.incomeAz)],
+                tabs: const [Tab(text: UiStrings.expense), Tab(text: UiStrings.income)],
               ),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: titleController,
-              decoration: const InputDecoration(labelText: UiStrings.titleAz, border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: UiStrings.title, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: UiStrings.amountAz, border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: UiStrings.amount, border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             InkWell(
               onTap: _pickCategory,
               child: InputDecorator(
-                decoration: const InputDecoration(labelText: UiStrings.categoryAz, border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: UiStrings.category, border: OutlineInputBorder()),
                 child: Row(
                   children: [
                     Icon(category.icon, color: category.color),
@@ -202,7 +202,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
             InkWell(
               onTap: _pickDate,
               child: InputDecorator(
-                decoration: const InputDecoration(labelText: UiStrings.dateAz, border: OutlineInputBorder()),
+                decoration: const InputDecoration(labelText: UiStrings.date, border: OutlineInputBorder()),
                 child: Text('${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'),
               ),
             ),

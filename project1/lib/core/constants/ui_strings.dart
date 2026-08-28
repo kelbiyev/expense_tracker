@@ -1,20 +1,16 @@
 class UiStrings {
   const UiStrings._();
 
-  static const balance = 'Balance';
-  static const income = 'Income';
-  static const expense = 'Expense';
   static const save = 'Yadda saxla';
-  static const category = 'Category:';
-  static const amount = 'Amount:';
-  static const date = 'Date:';
-  static const type = 'Type:';
-  static const note = 'Note';
-  static const close = 'Close';
-  static const delete = 'Delete';
+  static const category = 'Kategoriya';
+  static const amount = 'Məbləğ';
+  static const date = 'Tarix';
+  static const type = 'Növ';
+  static const close = 'Bağla';
+  static const delete = 'Sil';
   static const expenseTracker = 'Expense Tracker';
   static const noTransactions = 'Hələ əməliyyat yoxdur';
-  static const newTransaction  = 'Yeni əməliyyat';
+  static const newTransaction = 'Yeni əməliyyat';
   static const newGoal = 'Yeni Hədəf';
   static const addNewGoal = 'Yeni bir hədəf əlavə et';
   static const budgetGoal = 'Büdcə Hədəfləri';
@@ -28,39 +24,29 @@ class UiStrings {
   static const falseLimitAlert = 'Limit düzgün rəqəm olmalıdır';
   static const closeToLimit = 'limitə yaxınlaşır';
 
-  static const categoryAz = 'Kategoriya';
-  static const balanceAz = 'Ümumi balans';
-  static const incomeAz   = 'Gəlir';
-  static const expenseAz  = 'Xərc';
-  static const titleAz = 'Ad';
-  static const amountAz = 'Məbləğ';
-  static const dateAz = 'Tarix';
-  static const noteAz = 'Qeyd';
-  
+  static const balance = 'Ümumi balans';
+  static const income = 'Gəlir';
+  static const expense = 'Xərc';
+  static const title = 'Ad';
+
   static const manat = '₼';
 
-
   static const error = 'Xəta: ';
-  static const loadError = 'Loading xətası: ';
-  static const transactionLoadParseError = 'LocalTransactionRepository.load parse xətası: ';
-  static const budgetGoalLoadParseError = 'BudgetGoalRepository.load parse xətası: ';
-  static const saveError = 'Save xətası: ';
-  static const deleteError = 'Delete xətası: ';
-  static const createError = 'Create xətası: ';
-  static const reloadError = 'Reload xətası: ';
-
-  static const categoryLoadError = 'Kategoriya loading xətası: ';
-  static const categoryAddError = 'Kategoriya add xətası: ';
-  static const categoryDeleteError = 'Kategoriya delete xətası: ';
   static const categoryFindError = 'Kategoriya serverdə tapılmadı';
 
-  static const apiTransactionRepositoryRequirement = 'ApiTransactionRepository.add() categoryId tələb edir';
-
-  // Уведомления
   static const notifications = 'Bildirişlər';
   static const noNotifications = 'Hələ bildiriş yoxdur';
   static const markAllRead = 'Hamısını oxundu et';
-  static const notificationLoadError = 'Bildiriş loading xətası: ';
+
+  static const categoryFood = 'Yemək';
+  static const categoryTransport = 'Nəqliyyat';
+  static const categorySalary = 'Maaş';
+  static const categoryCinema = 'Kino';
+  static const categoryHobby = 'Hobbi';
+  static const categoryStreaming = 'Striminq';
+  static const categorySubscription = 'Abunəlik';
+  static const categoryShopping = 'Alış-veriş';
+  static const categoryOther = 'Digər';
 
   static const retry = 'Yenidən cəhd et';
 
@@ -73,5 +59,4 @@ class UiStrings {
   static const String serverError = 'Serverdə xəta baş verdi';
   static const String generic = 'Xəta baş verdi';
   static const String unexpected = 'Gözlənilməz xəta baş verdi';
-
 }

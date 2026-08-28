@@ -3,7 +3,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../core/categories.dart';
 import '../core/utils/formatters.dart';
 import '../core/constants/ui_colors.dart';
 import '../core/constants/ui_strings.dart';
@@ -14,8 +13,12 @@ import '../routes/app_routes.dart';
 
 import '../models/goal_model.dart';
 
-class BudgetGoalsPage extends StatelessWidget {
-  const BudgetGoalsPage({super.key});
+import '../widgets/app_error_view.dart';
+import '../widgets/app_empty_view.dart';
+import '../widgets/app_goal_progress_tile.dart';
+
+class GoalsPage extends StatelessWidget {
+  const GoalsPage({super.key});
 
   Future<void> _openNewGoalScreen(BuildContext context) async {
     final result = await context.pushNamed<(int, double, double)>(AppRoutes.newGoal.name);
@@ -53,19 +56,7 @@ class BudgetGoalsPage extends StatelessWidget {
     }
 
     if (provider.errorMessage != null && provider.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(provider.errorMessage!, textAlign: TextAlign.center),
-              const SizedBox(height: 16),
-              ElevatedButton(onPressed: provider.load, child: const Text(UiStrings.retry)),
-            ],
-          ),
-        ),
-      );
+      return AppErrorView(message: provider.errorMessage!, onRetry: provider.load);
     }
 
     return _buildContent(context, provider.targets);
@@ -125,21 +116,9 @@ class BudgetGoalsPage extends StatelessWidget {
           ),
 
           if (targets.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(32),
-              child: Text(
-                UiStrings.noBudgetGoal,
-                style: TextStyle(color: UiColors.grey),
-              ),
-            )
+            const AppEmptyView(message: UiStrings.noBudgetGoal)
           else
             ...targets.map((target) {
-              final localKey = keyForDisplayName(target.category.displayName);
-              final category = categoryFor(localKey);
-              final ratio = (target.progressPercentage / 100).clamp(0.0, 1.0);
-              final isNearLimit = target.monthlyLimit > 0 &&
-                  target.progressPercentage >= target.alertThreshold;
-
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
                 child: Slidable(
@@ -160,67 +139,7 @@ class BudgetGoalsPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: UiColors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: UiColors.cardShadow.withValues(alpha: 0.06),
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(category.icon, color: category.color),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                category.label,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '${formatCurrency(target.spentAmount)} / ${formatCurrency(target.monthlyLimit)} ${UiStrings.manat}',
-                              style: const TextStyle(fontSize: 13, color: UiColors.grey),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: ratio,
-                            color: category.color,
-                            backgroundColor: UiColors.grey.shade200,
-                            minHeight: 8,
-                          ),
-                        ),
-                        if (isNearLimit) ...[
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              const Icon(Icons.warning_amber_rounded, color: UiColors.orange, size: 16),
-                              const SizedBox(width: 6),
-                              Text(
-                                '${category.label} ${UiStrings.closeToLimit}',
-                                style: const TextStyle(color: UiColors.orange, fontSize: 12),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
+                  child: AppGoalProgressTile(target: target),
                 ),
               );
             }),
