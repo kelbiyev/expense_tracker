@@ -105,7 +105,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(UiStrings.monthlyExpense, style: TextStyle(color: UiColors.grey)),
+                  const Text(UiStrings.last3MonthsExpense, style: TextStyle(color: UiColors.grey)),
                   Text('${formatCurrency(stats.totalExpense)} ${UiStrings.manat}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ],
               ),

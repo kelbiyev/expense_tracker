@@ -9,9 +9,15 @@ import '../pages/goals.dart';
 import '../pages/new_goal.dart';
 import '../pages/notification.dart';
 
+import '../services/transaction_service.dart';
+import '../services/categories_service.dart';
+import '../services/goal_service.dart';
 import '../services/notification_service.dart';
 import '../services/statistics_service.dart';
 
+import '../providers/transaction_provider.dart';
+import '../providers/categories_provider.dart';
+import '../providers/goal_provider.dart';
 import '../providers/notification_provider.dart';
 import '../providers/statistics_provider.dart';
 
@@ -23,10 +29,45 @@ final GoRouter appRouter = GoRouter(
     body: Center(child: Text('Səhifə tapılmadı')),
   ),
   routes: [
-    GoRoute(
-      path: AppRoutes.home.path,
-      name: AppRoutes.home.name,
-      builder: (context, state) => const HomePage(),
+    ShellRoute(
+      builder: (context, state, child) {
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (_) => TransactionProvider(TransactionService())..load(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => CategoriesProvider(CategoriesService())..load(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => GoalProvider(GoalService())..load(),
+            ),
+          ],
+          child: child,
+        );
+      },
+      routes: [
+        GoRoute(
+          path: AppRoutes.home.path,
+          name: AppRoutes.home.name,
+          builder: (context, state) => const HomePage(),
+        ),
+        GoRoute(
+          path: AppRoutes.transaction.path,
+          name: AppRoutes.transaction.name,
+          builder: (context, state) => const TransactionPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.goals.path,
+          name: AppRoutes.goals.name,
+          builder: (context, state) => const GoalsPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.newGoal.path,
+          name: AppRoutes.newGoal.name,
+          builder: (context, state) => const NewGoalPage(),
+        ),
+      ],
     ),
     GoRoute(
       path: AppRoutes.statistics.path,
@@ -35,21 +76,6 @@ final GoRouter appRouter = GoRouter(
         create: (_) => StatisticsProvider(StatisticsService())..load(),
         child: const StatisticsPage(),
       ),
-    ),
-    GoRoute(
-      path: AppRoutes.goals.path,
-      name: AppRoutes.goals.name,
-      builder: (context, state) => const GoalsPage(),
-    ),
-    GoRoute(
-      path: AppRoutes.transaction.path,
-      name: AppRoutes.transaction.name,
-      builder: (context, state) => const TransactionPage(),
-    ),
-    GoRoute(
-      path: AppRoutes.newGoal.path,
-      name: AppRoutes.newGoal.name,
-      builder: (context, state) => const NewGoalPage(),
     ),
     GoRoute(
       path: AppRoutes.notification.path,

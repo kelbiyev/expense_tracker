@@ -16,7 +16,7 @@ class UiStrings {
   static const budgetGoal = 'Büdcə Hədəfləri';
   static const noBudgetGoal = 'Hələ hədəf yoxdur';
   static const categoryStats = 'Kateqoriya Statistikası';
-  static const monthlyExpense = 'Bu ay ümumi xərc';
+  static const last3MonthsExpense = 'Son 3 ay ümumi xərc';
   static const monthlyBudget = 'Bu ayın büdcəsi';
   static const chooseCategory = 'Kateqoriya seçin';
   static const emptyTitleAlert = 'Ad boş ola bilməz';
