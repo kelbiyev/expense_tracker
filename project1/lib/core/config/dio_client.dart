@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import 'api_exception.dart';
+
 
 class DioClient {
   DioClient._();
@@ -19,27 +21,8 @@ class DioClient {
         },
       ),
     );
-    
-    if (kDebugMode) {
-      dio.interceptors.add(
-        InterceptorsWrapper(
-          onRequest: (options, handler) {
-            debugPrint('→ ${options.method} ${options.uri}');
-            handler.next(options);
-          },
-          onResponse: (response, handler) {
-            debugPrint('← ${response.statusCode} ${response.requestOptions.uri}');
-            handler.next(response);
-          },
-          onError: (error, handler) {
-            debugPrint('✕ ${error.requestOptions.uri}: ${error.message}');
-            handler.next(error);
-          },
-        ),
-      );
-    }
 
-    dio.interceptors.add(
+   dio.interceptors.add(
       InterceptorsWrapper(
         onError: (error, handler) {
           handler.reject(
@@ -53,6 +36,19 @@ class DioClient {
         },
       ),
     );
+
+    if (kDebugMode) {
+      dio.interceptors.add(
+        PrettyDioLogger(
+          requestHeader: true,
+          requestBody: true,
+          responseHeader: false,
+          responseBody: true,
+          error: true,
+          compact: true,
+        ),
+      );
+    }
 
     return dio;
   }

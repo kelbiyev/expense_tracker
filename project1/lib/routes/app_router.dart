@@ -23,6 +23,15 @@ import '../providers/statistics_provider.dart';
 
 import 'app_routes.dart';
 
+/// Каждый провайдер вешается только там, где он реально нужен —
+/// не на все route разом. Единственный, кому требуется ОБЩИЙ (не
+/// пересоздаваемый) экземпляр — TransactionProvider между Home и
+/// Transaction: иначе новая операция не долетит до списка на Home.
+/// Поэтому только они внутри ShellRoute. CategoriesProvider и
+/// GoalProvider нигде не обязаны быть общим экземпляром между
+/// страницами (ни одна из них не полагается на то, что другая
+/// страница уже успела что-то в них изменить) — у каждой странице
+/// свой собственный, точечно навешанный.
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.home.path,
   errorBuilder: (context, state) => const Scaffold(
@@ -31,18 +40,8 @@ final GoRouter appRouter = GoRouter(
   routes: [
     ShellRoute(
       builder: (context, state, child) {
-        return MultiProvider(
-          providers: [
-            ChangeNotifierProvider(
-              create: (_) => TransactionProvider(TransactionService())..load(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => CategoriesProvider(CategoriesService())..load(),
-            ),
-            ChangeNotifierProvider(
-              create: (_) => GoalProvider(GoalService())..load(),
-            ),
-          ],
+        return ChangeNotifierProvider(
+          create: (_) => TransactionProvider(TransactionService())..load(),
           child: child,
         );
       },
@@ -55,19 +54,37 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: AppRoutes.transaction.path,
           name: AppRoutes.transaction.name,
-          builder: (context, state) => const TransactionPage(),
-        ),
-        GoRoute(
-          path: AppRoutes.goals.path,
-          name: AppRoutes.goals.name,
-          builder: (context, state) => const GoalsPage(),
-        ),
-        GoRoute(
-          path: AppRoutes.newGoal.path,
-          name: AppRoutes.newGoal.name,
-          builder: (context, state) => const NewGoalPage(),
+          // CategoriesProvider нужен только здесь (поиск categoryId по
+          // имени) — TransactionProvider уже доступен из ShellRoute выше.
+          builder: (context, state) => ChangeNotifierProvider(
+            create: (_) => CategoriesProvider(CategoriesService())..load(),
+            child: const TransactionPage(),
+          ),
         ),
       ],
+    ),
+    GoRoute(
+      path: AppRoutes.goals.path,
+      name: AppRoutes.goals.name,
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => GoalProvider(GoalService())..load(),
+        child: const GoalsPage(),
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.newGoal.path,
+      name: AppRoutes.newGoal.name,
+      builder: (context, state) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => CategoriesProvider(CategoriesService())..load(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => GoalProvider(GoalService())..load(),
+          ),
+        ],
+        child: const NewGoalPage(),
+      ),
     ),
     GoRoute(
       path: AppRoutes.statistics.path,

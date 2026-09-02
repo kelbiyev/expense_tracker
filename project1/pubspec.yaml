@@ -41,6 +41,7 @@ dependencies:
   provider: ^6.1.5+1
   http: ^1.6.0
   dio: ^5.11.0
+  pretty_dio_logger: ^1.4.0
 
 dev_dependencies:
   flutter_test:
